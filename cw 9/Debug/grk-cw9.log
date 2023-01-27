@@ -1,0 +1,46 @@
+﻿  main.cpp
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\minwindef.h(130,1): warning C4005: 'APIENTRY': macro redefinition
+C:\Users\marci\Desktop\grk\grk\dependencies\glfw-3.3.8.bin.WIN32\include\GLFW\glfw3.h(123): message : see previous definition of 'APIENTRY'
+C:\Users\marci\Desktop\grk\cw 9\src\ex_9_1.hpp(78,30): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\marci\Desktop\grk\cw 9\src\ex_9_1.hpp(202,38): warning C4305: '=': truncation from 'double' to 'float'
+C:\Users\marci\Desktop\grk\cw 9\src\ex_9_1.hpp(226,16): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\marci\Desktop\grk\cw 9\src\ex_9_1.hpp(275,13): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\marci\Desktop\grk\cw 9\src\ex_9_1.hpp(298,13): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\marci\Desktop\grk\cw 9\src\ex_9_1.hpp(304,108): warning C4305: 'argument': truncation from 'double' to 'T'
+          with
+          [
+              T=float
+          ]
+C:\Users\marci\Desktop\grk\cw 9\src\ex_9_1.hpp(320,39): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
+C:\Users\marci\Desktop\grk\cw 9\src\ex_9_1.hpp(321,36): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
+C:\Users\marci\Desktop\grk\cw 9\src\ex_9_1.hpp(322,37): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
+C:\Users\marci\Desktop\grk\cw 9\src\ex_9_1.hpp(326,39): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
+C:\Users\marci\Desktop\grk\cw 9\src\ex_9_1.hpp(327,36): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
+C:\Users\marci\Desktop\grk\cw 9\src\ex_9_1.hpp(328,37): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
+C:\Users\marci\Desktop\grk\cw 9\src\ex_9_1.hpp(332,39): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
+C:\Users\marci\Desktop\grk\cw 9\src\ex_9_1.hpp(333,36): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
+C:\Users\marci\Desktop\grk\cw 9\src\ex_9_1.hpp(334,37): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
+C:\Users\marci\Desktop\grk\cw 9\src\ex_9_1.hpp(338,39): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
+C:\Users\marci\Desktop\grk\cw 9\src\ex_9_1.hpp(339,36): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
+C:\Users\marci\Desktop\grk\cw 9\src\ex_9_1.hpp(340,37): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
+C:\Users\marci\Desktop\grk\cw 9\src\ex_9_1.hpp(344,39): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
+C:\Users\marci\Desktop\grk\cw 9\src\ex_9_1.hpp(345,36): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
+C:\Users\marci\Desktop\grk\cw 9\src\ex_9_1.hpp(346,37): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
+C:\Users\marci\Desktop\grk\cw 9\src\ex_9_1.hpp(364,87): warning C4305: 'argument': truncation from 'double' to 'T'
+          with
+          [
+              T=float
+          ]
+C:\Users\marci\Desktop\grk\cw 9\src\ex_9_1.hpp(364,223): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\marci\Desktop\grk\cw 9\src\ex_9_1.hpp(367,59): warning C4305: 'argument': truncation from 'double' to 'T'
+          with
+          [
+              T=float
+          ]
+C:\Users\marci\Desktop\grk\cw 9\src\ex_9_1.hpp(368,37): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\marci\Desktop\grk\cw 9\src\ex_9_1.hpp(400,2): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\marci\Desktop\grk\cw 9\src\ex_9_1.hpp(511,21): warning C4305: '-=': truncation from 'double' to 'float'
+C:\Users\marci\Desktop\grk\cw 9\src\ex_9_1.hpp(513,21): warning C4305: '+=': truncation from 'double' to 'float'
+Box.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/INCREMENTAL:NO' specification
+LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
+  grk-cw9.vcxproj -> C:\Users\marci\Desktop\grk\grk\Debug\grk-cw9.exe

@@ -21,24 +21,25 @@ int WIDTH = 500, HEIGHT = 500;
 
 namespace models
 {
-	Core::RenderContext bedContext;
-	Core::RenderContext chairContext;
-	Core::RenderContext deskContext;
-	Core::RenderContext doorContext;
-	Core::RenderContext drawerContext;
-	Core::RenderContext marbleBustContext;
-	Core::RenderContext materaceContext;
-	Core::RenderContext pencilsContext;
-	Core::RenderContext planeContext;
+	Core::RenderContext columnMiddleContext;
+	Core::RenderContext columnNEContext;
+	Core::RenderContext columnNWContext;
+	Core::RenderContext columnSEContext;
+	Core::RenderContext columnSWContext;
+	Core::RenderContext doorLeftContext;
+	Core::RenderContext doorRightContext;
+	Core::RenderContext torchEContext;
+	Core::RenderContext torchNEContext;
+	Core::RenderContext roomContext;
 	Core::RenderContext spaceshipContext;
-	Core::RenderContext sphereContext;
-	Core::RenderContext windowContext;
-	Core::RenderContext testContext;
+	Core::RenderContext torchNWContext;
+	Core::RenderContext torchSEContext;
+	Core::RenderContext torchSWContext;
+	Core::RenderContext torchWContext;
 
-	Core::RenderContext room;
 	Core::RenderContext dragonSphere;
+	Core::RenderContext	dragonCone;
 	Core::RenderContext dragonCylinder;
-	Core::RenderContext dragonCone;
 }
 
 GLuint depthMapFBO;
@@ -367,16 +368,22 @@ void renderScene(GLFWwindow* window)
 		glm::translate(pointlightPos) * glm::scale(glm::vec3(0.1)) * glm::eulerAngleY(time / 3) * glm::translate(glm::vec3(4.f, 0, 0)) * glm::eulerAngleY(time) * glm::translate(glm::vec3(1.f, 0, 0)) * glm::scale(glm::vec3(0.1f)),
 		glm::vec3(0.5, 0.5, 0.5), 0.7, 0.0);
 
-	//drawObjectPBR(models::bedContext, glm::mat4(), glm::vec3(0.03f, 0.03f, 0.03f), 0.2f, 0.0f);
-	//drawObjectPBR(models::chairContext, glm::mat4(), glm::vec3(0.195239f, 0.37728f, 0.8f), 0.4f, 0.0f);
-	//drawObjectPBR(models::deskContext, glm::mat4(), glm::vec3(0.428691f, 0.08022f, 0.036889f), 0.2f, 0.0f);
-	//drawObjectPBR(models::doorContext, glm::mat4(), glm::vec3(0.402978f, 0.120509f, 0.057729f), 0.2f, 0.0f);
-	//drawObjectPBR(models::drawerContext, glm::mat4(), glm::vec3(0.428691f, 0.08022f, 0.036889f), 0.2f, 0.0f);
-	//drawObjectPBR(models::marbleBustContext, glm::mat4(), glm::vec3(1.f, 1.f, 1.f), 0.5f, 1.0f);
-	//drawObjectPBR(models::materaceContext, glm::mat4(), glm::vec3(0.9f, 0.9f, 0.9f), 0.8f, 0.0f);
-	//drawObjectPBR(models::pencilsContext, glm::mat4(), glm::vec3(0.10039f, 0.018356f, 0.001935f), 0.1f, 0.0f);
-	//drawObjectPBR(models::planeContext, glm::mat4(), glm::vec3(0.402978f, 0.120509f, 0.057729f), 0.2f, 0.0f);
-	//drawObjectPBR(models::windowContext, glm::mat4(), glm::vec3(0.402978f, 0.120509f, 0.057729f), 0.2f, 0.0f);
+	//// SCENE DRAWING
+
+	drawObjectPBR(models::columnMiddleContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+	drawObjectPBR(models::columnNEContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+	drawObjectPBR(models::columnNWContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+	drawObjectPBR(models::columnSEContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+	drawObjectPBR(models::columnSWContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+	drawObjectPBR(models::doorLeftContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+	drawObjectPBR(models::doorRightContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+	drawObjectPBR(models::torchEContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+	drawObjectPBR(models::torchNEContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+	drawObjectPBR(models::torchNWContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+	drawObjectPBR(models::torchSEContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+	drawObjectPBR(models::torchSWContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+	drawObjectPBR(models::torchWContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+	drawObjectPBR(models::roomContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
 	drawObjectPBR(models::room, glm::mat4(), glm::vec3(0.9f, 0.9f, 0.9f), 0.8f, 0.0f);
 
 	glm::vec3 spaceshipSide = glm::normalize(glm::cross(spaceshipDir, glm::vec3(0.f, 1.f, 0.f)));
@@ -445,26 +452,28 @@ void init(GLFWwindow* window)
 	programTest = shaderLoader.CreateProgram("shaders/test.vert", "shaders/test.frag");
 	programSun = shaderLoader.CreateProgram("shaders/shader_8_sun.vert", "shaders/shader_8_sun.frag");
 
-	loadModelToContext("./models/sphere.obj", sphereContext);
 	loadModelToContext("./models/spaceship.obj", shipContext);
 
-
-	loadModelToContext("./models/bed.obj", models::bedContext);
-	loadModelToContext("./models/chair.obj", models::chairContext);
-	loadModelToContext("./models/desk.obj", models::deskContext);
-	loadModelToContext("./models/door.obj", models::doorContext);
-	loadModelToContext("./models/drawer.obj", models::drawerContext);
-	loadModelToContext("./models/marbleBust.obj", models::marbleBustContext);
-	loadModelToContext("./models/materace.obj", models::materaceContext);
-	loadModelToContext("./models/pencils.obj", models::pencilsContext);
-	loadModelToContext("./models/plane.obj", models::planeContext);
+	loadModelToContext("./models/room.obj", models::roomContext);
 	loadModelToContext("./models/spaceship.obj", models::spaceshipContext);
-	loadModelToContext("./models/sphere.obj", models::sphereContext);
-	loadModelToContext("./models/window.obj", models::windowContext);
-	loadModelToContext("./models/test.obj", models::testContext);
 
 
-	loadModelToContext("./models/room.obj", models::room);
+
+	loadModelToContext("./models/columnMiddle.obj", models::columnMiddleContext);
+	loadModelToContext("./models/columnNE.obj", models::columnNEContext);
+	loadModelToContext("./models/columnNW.obj", models::columnNWContext);
+	loadModelToContext("./models/columnSE.obj", models::columnSEContext);
+	loadModelToContext("./models/columnSW.obj", models::columnSWContext);
+	loadModelToContext("./models/doorLeft.obj", models::doorLeftContext);
+	loadModelToContext("./models/doorRight.obj", models::doorRightContext);
+	loadModelToContext("./models/torchE.obj", models::torchEContext);
+	loadModelToContext("./models/torchNE.obj", models::torchNEContext);
+	loadModelToContext("./models/torchNW.obj", models::torchNWContext);
+	loadModelToContext("./models/torchSE.obj", models::torchSEContext);
+	loadModelToContext("./models/torchSW.obj", models::torchSWContext);
+	loadModelToContext("./models/torchW.obj", models::torchWContext);
+
+
 	loadModelToContext("./models/dragonSphere.obj", models::dragonSphere);
 	loadModelToContext("./models/dragonCylinder.obj", models::dragonCylinder);
 	loadModelToContext("./models/dragonCone.obj", models::dragonCone);

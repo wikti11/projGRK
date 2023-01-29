@@ -37,6 +37,7 @@ namespace models
 	Core::RenderContext torchSWContext;
 	Core::RenderContext torchWContext;
 
+	Core::RenderContext room;
 	Core::RenderContext dragonSphere;
 	Core::RenderContext	dragonCone;
 	Core::RenderContext dragonCylinder;
@@ -83,6 +84,8 @@ float deltaTime = 0.f;
 
 namespace dragon
 {
+	bool hasBeenShot = false;
+
 	Spline path;
 	int n = 1000;
 	float headIndex = 50;
@@ -96,6 +99,20 @@ namespace dragon
 	std::vector<glm::vec3> normal;
 	std::vector<glm::vec3> tangent;
 	std::vector<glm::vec3> bitangent;
+}
+
+namespace arrow
+{
+	glm::vec3 position = glm::vec3(1.0f);
+	glm::vec3 direction = glm::vec3(1.0f);
+	glm::vec3 side = glm::vec3(1.0f);
+	glm::vec3 up = glm::vec3(1.0f);
+	glm::mat4 cameraRotrationMatrix = glm::mat4(1.0f);
+	float time = 1.0f;
+	float radius = 0.5f;
+	float flySpeed = 1.0f;
+	float fallSpeed = 1.0f;
+	bool hasBeenShot = false;
 }
 
 void initDragon()
@@ -292,8 +309,6 @@ void renderScene(GLFWwindow* window)
 
 	Sleep(10);
 
-	///// SLEEP
-
 	glClearColor(0.4f, 0.4f, 0.8f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	float time = glfwGetTime();
@@ -311,12 +326,14 @@ void renderScene(GLFWwindow* window)
 
 	///// DRAGON
 
+	// positions
 	glm::vec3 headPosition = dragon::path.GetSplinePoint(dragon::headIndex * dragon::step, true);
 	glm::vec3 body1Position = dragon::path.GetSplinePoint(dragon::body1Index * dragon::step, true);
 	glm::vec3 body2Position = dragon::path.GetSplinePoint(dragon::body2Index * dragon::step, true);
 	glm::vec3 body3Position = dragon::path.GetSplinePoint(dragon::body3Index * dragon::step, true);
 	glm::vec3 tailPosition = dragon::path.GetSplinePoint(dragon::tailIndex * dragon::step, true);
 
+	// rotation matrices
 	glm::mat4 headRotation = glm::mat4(
 		glm::vec4(dragon::bitangent[dragon::headIndex], 0),
 		glm::vec4(dragon::normal[dragon::headIndex], 0),
@@ -348,27 +365,117 @@ void renderScene(GLFWwindow* window)
 		glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)
 	);
 
-	drawObjectPBR(models::dragonSphere, glm::translate(headPosition) * headRotation * glm::scale(glm::vec3(1.0f)) , glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, 0.0f);
-	drawObjectPBR(models::dragonCylinder, glm::translate(body1Position) * body1Rotation * glm::scale(glm::vec3(0.7f)) , glm::vec3(0.5f, 0.1f, 0.7f), 0.0f, 0.0f);
-	drawObjectPBR(models::dragonCylinder, glm::translate(body2Position) * body2Rotation * glm::scale(glm::vec3(0.7f)) , glm::vec3(0.5f, 0.1f, 0.7f), 0.0f, 0.0f);
-	drawObjectPBR(models::dragonCylinder, glm::translate(body3Position) * body3Rotation * glm::scale(glm::vec3(0.7f)) , glm::vec3(0.5f, 0.1f, 0.7f), 0.0f, 0.0f);
-	drawObjectPBR(models::dragonCone, glm::translate(tailPosition) * tailRotation  * glm::scale(glm::vec3(0.7f)), glm::vec3(0.5f, 0.1f, 0.7f), 0.0f, 0.0f);
+	// drawing
+	if (!dragon::hasBeenShot)
+	{
+		drawObjectPBR(models::dragonSphere, glm::translate(headPosition) * headRotation * glm::scale(glm::vec3(1.0f)), glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, 0.0f);
+		drawObjectPBR(models::dragonCylinder, glm::translate(body1Position) * body1Rotation * glm::scale(glm::vec3(0.7f)), glm::vec3(0.5f, 0.1f, 0.7f), 0.0f, 0.0f);
+		drawObjectPBR(models::dragonCylinder, glm::translate(body2Position) * body2Rotation * glm::scale(glm::vec3(0.7f)), glm::vec3(0.5f, 0.1f, 0.7f), 0.0f, 0.0f);
+		drawObjectPBR(models::dragonCylinder, glm::translate(body3Position) * body3Rotation * glm::scale(glm::vec3(0.7f)), glm::vec3(0.5f, 0.1f, 0.7f), 0.0f, 0.0f);
+		drawObjectPBR(models::dragonCone, glm::translate(tailPosition) * tailRotation * glm::scale(glm::vec3(0.7f)), glm::vec3(0.5f, 0.1f, 0.7f), 0.0f, 0.0f);
+	}
 
+	// index
 	dragon::headIndex++; if (dragon::headIndex == dragon::n) dragon::headIndex = 0;
 	dragon::body1Index++; if (dragon::body1Index == dragon::n) dragon::body1Index = 0;
 	dragon::body2Index++; if (dragon::body2Index == dragon::n) dragon::body2Index = 0;
 	dragon::body3Index++; if (dragon::body3Index == dragon::n) dragon::body3Index = 0;
 	dragon::tailIndex++; if (dragon::tailIndex == dragon::n) dragon::tailIndex = 0;
 
-	///// DRAGON
+	///// ARROW
 
-	drawObjectPBR(sphereContext, glm::translate(pointlightPos) * glm::scale(glm::vec3(0.1)) * glm::eulerAngleY(time / 3) * glm::translate(glm::vec3(4.f, 0, 0)) * glm::scale(glm::vec3(0.3f)), glm::vec3(0.2, 0.7, 0.3), 0.3, 0.0);
+	if (arrow::hasBeenShot)
+	{
+		// update
+		arrow::time += deltaTime;
+		arrow::flySpeed = 0.05f * deltaTime * 60;
+		arrow::fallSpeed = 0.01f * deltaTime * 60;
+		arrow::position += arrow::direction * arrow::flySpeed;
+		arrow::position -= arrow::up * arrow::fallSpeed * arrow::time;
 
-	drawObjectPBR(sphereContext,
-		glm::translate(pointlightPos) * glm::scale(glm::vec3(0.1)) * glm::eulerAngleY(time / 3) * glm::translate(glm::vec3(4.f, 0, 0)) * glm::eulerAngleY(time) * glm::translate(glm::vec3(1.f, 0, 0)) * glm::scale(glm::vec3(0.1f)),
-		glm::vec3(0.5, 0.5, 0.5), 0.7, 0.0);
+		// wall collision
+		float roomMinX = -10.0f;
+		float roomMaxX = 10.0f;
+		float roomMinY = -10.0f;
+		float roomMaxY = 10.0f;
+		float roomMinZ = -10.0f;
+		float roomMaxZ = 10.0f;
+		if (fabs(roomMinX - arrow::position.x) < arrow::radius ||
+			fabs(roomMaxX - arrow::position.x) < arrow::radius ||
+			fabs(roomMinY - arrow::position.y) < arrow::radius ||
+			fabs(roomMaxY - arrow::position.y) < arrow::radius ||
+			fabs(roomMinZ - arrow::position.z) < arrow::radius ||
+			fabs(roomMaxZ - arrow::position.z) < arrow::radius
+			)
+		{
+			arrow::hasBeenShot = false;
+		}
 
-	//// SCENE DRAWING
+		// column collision
+		float columnRadius = 1.0f;
+
+		// torch collision
+		float torchRadius = 1.0f;
+		float torchMinY = 1.0f;
+		float torchMaxY = 1.0f;
+
+		// dragon center body part collision
+		float distance = sqrt(
+			(body2Position.x - arrow::position.x) * (body2Position.x - arrow::position.x) +
+			(body2Position.y - arrow::position.y) * (body2Position.y - arrow::position.y) +
+			(body2Position.z - arrow::position.z) * (body2Position.z - arrow::position.z)
+		);
+		if (distance < arrow::radius)
+		{
+			dragon::hasBeenShot = true;
+		}
+
+		// rotation matrix
+		arrow::side = glm::normalize(glm::cross(arrow::direction, glm::vec3(0.f, 1.f, 0.f)));
+		arrow::up = glm::normalize(glm::cross(arrow::side, arrow::direction));
+		arrow::cameraRotrationMatrix = glm::mat4({
+			arrow::side.x,arrow::side.y,arrow::side.z,0,
+			arrow::up.x,arrow::up.y,arrow::up.z ,0,
+			-arrow::direction.x,-arrow::direction.y,-arrow::direction.z,0,
+			0.,0.,0.,1.,
+			});
+
+		// draw
+		drawObjectPBR(shipContext,
+			glm::translate(arrow::position) * arrow::cameraRotrationMatrix * glm::eulerAngleY(glm::pi<float>()) * glm::scale(glm::vec3(0.01f)),
+			glm::vec3(0.1, 0.9, 0.9),
+			0.2, 1.0
+		);
+	}
+
+	///// SHIP
+
+	// rotation matrix
+	glm::vec3 spaceshipSide = glm::normalize(glm::cross(spaceshipDir, glm::vec3(0.f, 1.f, 0.f)));
+	glm::vec3 spaceshipUp = glm::normalize(glm::cross(spaceshipSide, spaceshipDir));
+	glm::mat4 specshipCameraRotrationMatrix = glm::mat4({
+		spaceshipSide.x,spaceshipSide.y,spaceshipSide.z,0,
+		spaceshipUp.x,spaceshipUp.y,spaceshipUp.z ,0,
+		-spaceshipDir.x,-spaceshipDir.y,-spaceshipDir.z,0,
+		0.,0.,0.,1.,
+		});
+
+	// color
+	glm::vec3 shipColor = glm::vec3(0.1, 0.9, 0.1);
+	if (arrow::hasBeenShot) shipColor = glm::vec3(0.9, 0.1, 0.1);
+	if (dragon::hasBeenShot) shipColor = glm::vec3(0.9, 0.9, 0.1);
+
+	// drawing
+	drawObjectPBR(shipContext,
+		glm::translate(spaceshipPos) * specshipCameraRotrationMatrix * glm::eulerAngleY(glm::pi<float>()) * glm::scale(glm::vec3(0.03f)),
+		shipColor, 0.2, 1.0
+	);
+
+	// update
+	spotlightPos = spaceshipPos + 0.2 * spaceshipDir;
+	spotlightConeDir = spaceshipDir;
+
+	///// SCENE DRAWING
 
 	drawObjectPBR(models::columnMiddleContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
 	drawObjectPBR(models::columnNEContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
@@ -385,31 +492,6 @@ void renderScene(GLFWwindow* window)
 	drawObjectPBR(models::torchWContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
 	drawObjectPBR(models::roomContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
 	drawObjectPBR(models::room, glm::mat4(), glm::vec3(0.9f, 0.9f, 0.9f), 0.8f, 0.0f);
-
-	glm::vec3 spaceshipSide = glm::normalize(glm::cross(spaceshipDir, glm::vec3(0.f, 1.f, 0.f)));
-	glm::vec3 spaceshipUp = glm::normalize(glm::cross(spaceshipSide, spaceshipDir));
-	glm::mat4 specshipCameraRotrationMatrix = glm::mat4({
-		spaceshipSide.x,spaceshipSide.y,spaceshipSide.z,0,
-		spaceshipUp.x,spaceshipUp.y,spaceshipUp.z ,0,
-		-spaceshipDir.x,-spaceshipDir.y,-spaceshipDir.z,0,
-		0.,0.,0.,1.,
-		});
-
-
-	//drawObjectColor(shipContext,
-	//	glm::translate(cameraPos + 1.5 * cameraDir + cameraUp * -0.5f) * inveseCameraRotrationMatrix * glm::eulerAngleY(glm::pi<float>()),
-	//	glm::vec3(0.3, 0.3, 0.5)
-	//	);
-	drawObjectPBR(shipContext,
-		glm::translate(spaceshipPos) * specshipCameraRotrationMatrix * glm::eulerAngleY(glm::pi<float>()) * glm::scale(glm::vec3(0.03f)),
-		glm::vec3(0.3, 0.3, 0.5),
-		0.2, 1.0
-	);
-
-	spotlightPos = spaceshipPos + 0.2 * spaceshipDir;
-	spotlightConeDir = spaceshipDir;
-
-
 
 	//test depth buffer
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -493,9 +575,8 @@ void processInput(GLFWwindow* window)
 	glm::vec3 spaceshipUp = glm::vec3(0.f, 1.f, 0.f);
 	float angleSpeed = 0.05f * deltaTime * 60;
 	float moveSpeed = 0.05f * deltaTime * 60;
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
-	}
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		spaceshipPos += spaceshipDir * moveSpeed;
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -521,13 +602,28 @@ void processInput(GLFWwindow* window)
 	if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
 		exposition += 0.05;
 
-	if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) {
+	if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
+	{
 		printf("spaceshipPos = glm::vec3(%ff, %ff, %ff);\n", spaceshipPos.x, spaceshipPos.y, spaceshipPos.z);
 		printf("spaceshipDir = glm::vec3(%ff, %ff, %ff);\n", spaceshipDir.x, spaceshipDir.y, spaceshipDir.z);
+		printf("arrow::position = glm::vec3(%ff, %ff, %ff);\n", arrow::position.x, arrow::position.y, arrow::position.z);
+		printf("arrow::direction = glm::vec3(%ff, %ff, %ff);\n", arrow::direction.x, arrow::direction.y, arrow::direction.z);
 	}
 
 	//cameraDir = glm::normalize(-cameraPos);
 
+	///// ARROW
+
+	if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
+	{
+		//if (!arrow::hasBeenShot)
+		{
+			arrow::hasBeenShot = true;
+			arrow::time = 0.0f;
+			arrow::position = spaceshipPos;
+			arrow::direction = spaceshipDir;
+		}
+	}
 }
 
 // funkcja jest glowna petla

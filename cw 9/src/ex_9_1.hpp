@@ -21,22 +21,14 @@ int WIDTH = 500, HEIGHT = 500;
 
 namespace models
 {
-	Core::RenderContext columnMiddleContext;
-	Core::RenderContext columnNEContext;
-	Core::RenderContext columnNWContext;
-	Core::RenderContext columnSEContext;
-	Core::RenderContext columnSWContext;
+	Core::RenderContext columnContext;
 	Core::RenderContext doorLeftContext;
 	Core::RenderContext doorRightContext;
-	Core::RenderContext torchEContext;
-	Core::RenderContext torchNEContext;
 	Core::RenderContext roomContext;
 	Core::RenderContext spaceshipContext;
-	Core::RenderContext torchNWContext;
-	Core::RenderContext torchSEContext;
-	Core::RenderContext torchSWContext;
-	Core::RenderContext torchWContext;
-
+	Core::RenderContext torchContext;
+	Core::RenderContext torchRingsContext;
+	Core::RenderContext torchHandleContext;
 	Core::RenderContext room;
 	Core::RenderContext dragonSphere;
 	Core::RenderContext	dragonCone;
@@ -303,6 +295,41 @@ void renderShadowapSun() {
 	glViewport(0, 0, WIDTH, HEIGHT);
 }
 
+
+// torch consists of 3 main elements so everything is put here to simplify it
+// they don't rotate no matter if i use matrix, glm::rotate or glm::eulerAngle
+
+void drawTorch(glm::mat4 translationMatrix, int angle) {
+	
+	glm::mat4 rotation = glm::mat4({
+	cos(angle), -sin(angle), 0.,
+	sin(angle), cos(angle), 0.,
+	0., 0., 1.,
+		});
+
+	switch (angle) {
+	case -90:
+		drawObjectPBR(models::torchContext, glm::mat4() * translationMatrix * rotation, glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+		drawObjectPBR(models::torchRingsContext, glm::mat4() * translationMatrix * rotation, glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+		drawObjectPBR(models::torchHandleContext, glm::mat4() * translationMatrix * rotation, glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+	case 90:
+		drawObjectPBR(models::torchContext, glm::mat4() * translationMatrix * rotation, glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+		drawObjectPBR(models::torchRingsContext, glm::mat4() * translationMatrix * rotation, glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+		drawObjectPBR(models::torchHandleContext, glm::mat4() * translationMatrix * rotation, glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+	case 180:
+		drawObjectPBR(models::torchContext, glm::mat4() * translationMatrix * rotation, glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+		drawObjectPBR(models::torchRingsContext, glm::mat4() * translationMatrix * rotation, glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+		drawObjectPBR(models::torchHandleContext, glm::mat4() * translationMatrix * rotation, glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+	default:
+		drawObjectPBR(models::torchContext, glm::mat4() * translationMatrix, glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+		drawObjectPBR(models::torchRingsContext, glm::mat4() * translationMatrix, glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+		drawObjectPBR(models::torchHandleContext, glm::mat4() * translationMatrix, glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+		
+	
+	}
+
+}
+
 void renderScene(GLFWwindow* window)
 {
 	///// SLEEP
@@ -477,19 +504,20 @@ void renderScene(GLFWwindow* window)
 
 	///// SCENE DRAWING
 
-	drawObjectPBR(models::columnMiddleContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
-	drawObjectPBR(models::columnNEContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
-	drawObjectPBR(models::columnNWContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
-	drawObjectPBR(models::columnSEContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
-	drawObjectPBR(models::columnSWContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+	drawObjectPBR(models::columnContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+	drawObjectPBR(models::columnContext, glm::mat4() * glm::translate(glm::vec3(-4.f, 0.0f, -6.0f)), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+	drawObjectPBR(models::columnContext, glm::mat4() * glm::translate(glm::vec3(-4.f, 0.0f, 6.0f)), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+	drawObjectPBR(models::columnContext, glm::mat4() * glm::translate(glm::vec3(4.f, 0.0f, -6.0f)), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+	drawObjectPBR(models::columnContext, glm::mat4() * glm::translate(glm::vec3(4.f, 0.0f, 6.0f)), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
 	drawObjectPBR(models::doorLeftContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
 	drawObjectPBR(models::doorRightContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
-	drawObjectPBR(models::torchEContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
-	drawObjectPBR(models::torchNEContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
-	drawObjectPBR(models::torchNWContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
-	drawObjectPBR(models::torchSEContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
-	drawObjectPBR(models::torchSWContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
-	drawObjectPBR(models::torchWContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+	drawTorch(glm::translate(glm::vec3(0.0f, 0.0f, 0.0f)), 0);
+	drawTorch(glm::translate(glm::vec3(0.0f, 0.0f, 15.9471f)), 0);
+	drawTorch(glm::translate(glm::vec3(19.9339f, 0.0f, 0.0f)), 180);
+	drawTorch(glm::translate(glm::vec3(19.9339f, 0.0f, 15.9471f)), 180);
+	drawTorch(glm::translate(glm::vec3(9.74109f, 0.0f, -1.9471f)), -90);
+	drawTorch(glm::translate(glm::vec3(9.74109f, 0.0f, 17.898f)), 90);
+
 	drawObjectPBR(models::roomContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
 	drawObjectPBR(models::room, glm::mat4(), glm::vec3(0.9f, 0.9f, 0.9f), 0.8f, 0.0f);
 
@@ -535,26 +563,14 @@ void init(GLFWwindow* window)
 	programSun = shaderLoader.CreateProgram("shaders/shader_8_sun.vert", "shaders/shader_8_sun.frag");
 
 	loadModelToContext("./models/spaceship.obj", shipContext);
-
 	loadModelToContext("./models/room.obj", models::roomContext);
 	loadModelToContext("./models/spaceship.obj", models::spaceshipContext);
-
-
-
-	loadModelToContext("./models/columnMiddle.obj", models::columnMiddleContext);
-	loadModelToContext("./models/columnNE.obj", models::columnNEContext);
-	loadModelToContext("./models/columnNW.obj", models::columnNWContext);
-	loadModelToContext("./models/columnSE.obj", models::columnSEContext);
-	loadModelToContext("./models/columnSW.obj", models::columnSWContext);
+	loadModelToContext("./models/column.obj", models::columnContext);
 	loadModelToContext("./models/doorLeft.obj", models::doorLeftContext);
 	loadModelToContext("./models/doorRight.obj", models::doorRightContext);
-	loadModelToContext("./models/torchE.obj", models::torchEContext);
-	loadModelToContext("./models/torchNE.obj", models::torchNEContext);
-	loadModelToContext("./models/torchNW.obj", models::torchNWContext);
-	loadModelToContext("./models/torchSE.obj", models::torchSEContext);
-	loadModelToContext("./models/torchSW.obj", models::torchSWContext);
-	loadModelToContext("./models/torchW.obj", models::torchWContext);
-
+	loadModelToContext("./models/torch.obj", models::torchContext);
+	loadModelToContext("./models/torchRings.obj", models::torchRingsContext);
+	loadModelToContext("./models/torchHandle.obj", models::torchHandleContext);
 
 	loadModelToContext("./models/dragonSphere.obj", models::dragonSphere);
 	loadModelToContext("./models/dragonCylinder.obj", models::dragonCylinder);

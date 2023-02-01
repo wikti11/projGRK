@@ -299,34 +299,12 @@ void renderShadowapSun() {
 // torch consists of 3 main elements so everything is put here to simplify it
 // they don't rotate no matter if i use matrix, glm::rotate or glm::eulerAngle
 
-void drawTorch(glm::mat4 translationMatrix, int angle) {
+void drawTorch(glm::mat4 translationMatrix, float angle) {
 	
-	glm::mat4 rotation = glm::mat4({
-	cos(angle), -sin(angle), 0.,
-	sin(angle), cos(angle), 0.,
-	0., 0., 1.,
-		});
-
-	switch (angle) {
-	case -90:
-		drawObjectPBR(models::torchContext, glm::mat4() * translationMatrix * rotation, glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
-		drawObjectPBR(models::torchRingsContext, glm::mat4() * translationMatrix * rotation, glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
-		drawObjectPBR(models::torchHandleContext, glm::mat4() * translationMatrix * rotation, glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
-	case 90:
-		drawObjectPBR(models::torchContext, glm::mat4() * translationMatrix * rotation, glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
-		drawObjectPBR(models::torchRingsContext, glm::mat4() * translationMatrix * rotation, glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
-		drawObjectPBR(models::torchHandleContext, glm::mat4() * translationMatrix * rotation, glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
-	case 180:
-		drawObjectPBR(models::torchContext, glm::mat4() * translationMatrix * rotation, glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
-		drawObjectPBR(models::torchRingsContext, glm::mat4() * translationMatrix * rotation, glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
-		drawObjectPBR(models::torchHandleContext, glm::mat4() * translationMatrix * rotation, glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
-	default:
-		drawObjectPBR(models::torchContext, glm::mat4() * translationMatrix, glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
-		drawObjectPBR(models::torchRingsContext, glm::mat4() * translationMatrix, glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
-		drawObjectPBR(models::torchHandleContext, glm::mat4() * translationMatrix, glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+		drawObjectPBR(models::torchContext, glm::mat4() * translationMatrix * glm::eulerAngleY(glm::radians(angle)), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+		drawObjectPBR(models::torchRingsContext, glm::mat4() * translationMatrix * glm::eulerAngleY(glm::radians(angle)), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+		drawObjectPBR(models::torchHandleContext, glm::mat4() * translationMatrix * glm::eulerAngleY(glm::radians(angle)), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
 		
-	
-	}
 
 }
 
@@ -421,12 +399,12 @@ void renderScene(GLFWwindow* window)
 		arrow::position -= arrow::up * arrow::fallSpeed * arrow::time;
 
 		// wall collision
-		float roomMinX = -10.0f;
-		float roomMaxX = 10.0f;
-		float roomMinY = -10.0f;
-		float roomMaxY = 10.0f;
-		float roomMinZ = -10.0f;
-		float roomMaxZ = 10.0f;
+		float roomMinX = -19.993f/2;
+		float roomMaxX = 19.993f/2;
+		float roomMinZ = -19.993f/2;
+		float roomMaxZ = 19.993f/2;
+		float roomMinY = 0.0f;
+		float roomMaxY = 3.98678f;
 		if (fabs(roomMinX - arrow::position.x) < arrow::radius ||
 			fabs(roomMaxX - arrow::position.x) < arrow::radius ||
 			fabs(roomMinY - arrow::position.y) < arrow::radius ||
@@ -439,12 +417,12 @@ void renderScene(GLFWwindow* window)
 		}
 
 		// column collision
-		float columnRadius = 1.0f;
+		float columnRadius = 0.747522f;
 
 		// torch collision
-		float torchRadius = 1.0f;
-		float torchMinY = 1.0f;
-		float torchMaxY = 1.0f;
+		float torchRadius = 0.595796f;
+		float torchMinY = 1.15648f;
+		float torchMaxY = 3.1608f;
 
 		// dragon center body part collision
 		float distance = sqrt(
@@ -511,12 +489,12 @@ void renderScene(GLFWwindow* window)
 	drawObjectPBR(models::columnContext, glm::mat4() * glm::translate(glm::vec3(4.f, 0.0f, 6.0f)), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
 	drawObjectPBR(models::doorLeftContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
 	drawObjectPBR(models::doorRightContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
-	drawTorch(glm::translate(glm::vec3(0.0f, 0.0f, 0.0f)), 0);
-	drawTorch(glm::translate(glm::vec3(0.0f, 0.0f, 15.9471f)), 0);
-	drawTorch(glm::translate(glm::vec3(19.9339f, 0.0f, 0.0f)), 180);
-	drawTorch(glm::translate(glm::vec3(19.9339f, 0.0f, 15.9471f)), 180);
-	drawTorch(glm::translate(glm::vec3(9.74109f, 0.0f, -1.9471f)), -90);
-	drawTorch(glm::translate(glm::vec3(9.74109f, 0.0f, 17.898f)), 90);
+	drawTorch(glm::translate(glm::vec3(0.0f, 0.0f, 0.0f)), 0.0f);
+	drawTorch(glm::translate(glm::vec3(0.0f, 0.0f, 15.9471f)), 0.0f);
+	drawTorch(glm::translate(glm::vec3(0.7f, 0.0f, 0.0f)), 180.0f);
+	drawTorch(glm::translate(glm::vec3(0.7f, 0.0f, -15.9471f)), 180.0f);
+	drawTorch(glm::translate(glm::vec3(-9.74109f/1.5f, 0.0f, -0.47f)), -90.0f);
+	drawTorch(glm::translate(glm::vec3(9.74109f, 0.0f, 0.24f)), 90.0f);
 
 	drawObjectPBR(models::roomContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
 	drawObjectPBR(models::room, glm::mat4(), glm::vec3(0.9f, 0.9f, 0.9f), 0.8f, 0.0f);

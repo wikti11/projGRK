@@ -74,25 +74,36 @@ float spotlightPhi = 3.14 / 4;
 float lastTime = -1.f;
 float deltaTime = 0.f;
 
+std::vector<glm::vec3> columnPosition;
+std::vector<bool> columnExisting;
+
+std::vector<glm::vec3> torchPosition;
+std::vector<float> torchAngle;
+std::vector<bool> torchExisting;
+
 namespace dragon
 {
 	bool hasBeenShot = false;
 
 	Spline path;
 	int n = 1000;
+	float step = 0.0f;
+	float theta = 0.0f;
+
+	std::vector<glm::vec3> normal;
+	std::vector<glm::vec3> tangent;
+	std::vector<glm::vec3> bitangent;
+
 	float headIndex = 50;
 	float body1Index = 40;
 	float body2Index = 35;
 	float body3Index = 30;
 	float tailIndex = 25;
-	float step = 0.0f;
 
-	float theta = 0.0f;
-	std::vector<glm::vec3> normal;
-	std::vector<glm::vec3> tangent;
-	std::vector<glm::vec3> bitangent;
+	bool isFalling = false;
+	float fallSpeed = 1.0f;
+	float fallTime = 1.0f;
 }
-
 namespace arrow
 {
 	glm::vec3 position = glm::vec3(1.0f);
@@ -102,12 +113,48 @@ namespace arrow
 	glm::mat4 cameraRotrationMatrix = glm::mat4(1.0f);
 	float time = 1.0f;
 	float radius = 0.5f;
-	float flySpeed = 1.0f;
+	float flySpeed = 2.0f;
 	float fallSpeed = 1.0f;
 	bool hasBeenShot = false;
 }
 
-void initDragon()
+void initColumns()
+{
+	columnPosition = {
+		{0.0f, 0.0f, 0.0f},
+		{-4.f, 0.0f, -6.0f},
+		{-4.f, 0.0f, 6.0f},
+		{4.f, 0.0f, -6.0f},
+		{4.f, 0.0f, 6.0f},
+	};
+
+	columnExisting = std::vector<bool>(columnPosition.size(), true);
+}
+
+void initTorches()
+{
+	torchPosition = {
+		{ 0.0f, 0.0f, 0.0f },
+		{ 0.0f, 0.0f, 15.9471f },
+		{ 0.7f, 0.0f, 0.0f },
+		{ 0.7f, 0.0f, -15.9471f },
+		{ -9.74109f / 1.5f, 0.0f, -0.47f },
+		{ 9.74109f, 0.0f, 0.24f },
+	};
+
+	torchAngle = {
+		0.0f,
+		0.0f,
+		180.0f,
+		180.0f,
+		-90.0f,
+		90.0f,
+	};
+
+	torchExisting = std::vector<bool>(torchPosition.size(), true);
+}
+
+void initPathPoints()
 {
 	dragon::path.points = {
 	{  0.0f, 1.0f, 0.0f },
@@ -156,7 +203,10 @@ void initDragon()
 	{  0.0f, 1.0f, -1.0f },
 	{  0.0f, 1.0f, 0.0f },
 	};
+}
 
+void initPath()
+{
 	dragon::step = dragon::path.points.size() / (float)dragon::n;
 
 	dragon::normal = std::vector<glm::vec3>(dragon::n, glm::vec3(1.0f));
@@ -299,19 +349,16 @@ void renderShadowapSun() {
 // torch consists of 3 main elements so everything is put here to simplify it
 // they don't rotate no matter if i use matrix, glm::rotate or glm::eulerAngle
 
-void drawTorch(glm::mat4 translationMatrix, float angle) {
-	
-		drawObjectPBR(models::torchContext, glm::mat4() * translationMatrix * glm::eulerAngleY(glm::radians(angle)), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
-		drawObjectPBR(models::torchRingsContext, glm::mat4() * translationMatrix * glm::eulerAngleY(glm::radians(angle)), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
-		drawObjectPBR(models::torchHandleContext, glm::mat4() * translationMatrix * glm::eulerAngleY(glm::radians(angle)), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
-		
-
+void drawTorch(glm::mat4 translationMatrix, float angle)
+{
+	drawObjectPBR(models::torchContext, glm::mat4() * translationMatrix * glm::eulerAngleY(glm::radians(angle)), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+	drawObjectPBR(models::torchRingsContext, glm::mat4() * translationMatrix * glm::eulerAngleY(glm::radians(angle)), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+	drawObjectPBR(models::torchHandleContext, glm::mat4() * translationMatrix * glm::eulerAngleY(glm::radians(angle)), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
 }
 
 void renderScene(GLFWwindow* window)
 {
 	///// SLEEP
-
 	Sleep(10);
 
 	glClearColor(0.4f, 0.4f, 0.8f, 1.0f);
@@ -337,6 +384,18 @@ void renderScene(GLFWwindow* window)
 	glm::vec3 body2Position = dragon::path.GetSplinePoint(dragon::body2Index * dragon::step, true);
 	glm::vec3 body3Position = dragon::path.GetSplinePoint(dragon::body3Index * dragon::step, true);
 	glm::vec3 tailPosition = dragon::path.GetSplinePoint(dragon::tailIndex * dragon::step, true);
+
+	// falling
+	if (dragon::isFalling)
+	{
+		dragon::fallSpeed = 1.0f;
+		dragon::fallTime += deltaTime;
+		headPosition.y -= dragon::fallTime * dragon::fallTime * dragon::fallSpeed;
+		if (dragon::fallTime > 1.0f)
+		{
+			dragon::isFalling = false;
+		}
+	}
 
 	// rotation matrices
 	glm::mat4 headRotation = glm::mat4(
@@ -371,7 +430,7 @@ void renderScene(GLFWwindow* window)
 	);
 
 	// drawing
-	if (!dragon::hasBeenShot)
+	if (!(dragon::hasBeenShot && !dragon::isFalling))
 	{
 		drawObjectPBR(models::dragonSphere, glm::translate(headPosition) * headRotation * glm::scale(glm::vec3(1.0f)), glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, 0.0f);
 		drawObjectPBR(models::dragonCylinder, glm::translate(body1Position) * body1Rotation * glm::scale(glm::vec3(0.7f)), glm::vec3(0.5f, 0.1f, 0.7f), 0.0f, 0.0f);
@@ -381,11 +440,14 @@ void renderScene(GLFWwindow* window)
 	}
 
 	// index
-	dragon::headIndex++; if (dragon::headIndex == dragon::n) dragon::headIndex = 0;
-	dragon::body1Index++; if (dragon::body1Index == dragon::n) dragon::body1Index = 0;
-	dragon::body2Index++; if (dragon::body2Index == dragon::n) dragon::body2Index = 0;
-	dragon::body3Index++; if (dragon::body3Index == dragon::n) dragon::body3Index = 0;
-	dragon::tailIndex++; if (dragon::tailIndex == dragon::n) dragon::tailIndex = 0;
+	if (!dragon::isFalling)
+	{
+		dragon::headIndex++; if (dragon::headIndex == dragon::n) dragon::headIndex = 0;
+		dragon::body1Index++; if (dragon::body1Index == dragon::n) dragon::body1Index = 0;
+		dragon::body2Index++; if (dragon::body2Index == dragon::n) dragon::body2Index = 0;
+		dragon::body3Index++; if (dragon::body3Index == dragon::n) dragon::body3Index = 0;
+		dragon::tailIndex++; if (dragon::tailIndex == dragon::n) dragon::tailIndex = 0;
+	}
 
 	///// ARROW
 
@@ -399,10 +461,10 @@ void renderScene(GLFWwindow* window)
 		arrow::position -= arrow::up * arrow::fallSpeed * arrow::time;
 
 		// wall collision
-		float roomMinX = -19.993f/2;
-		float roomMaxX = 19.993f/2;
-		float roomMinZ = -19.993f/2;
-		float roomMaxZ = 19.993f/2;
+		float roomMinX = -19.993f / 2;
+		float roomMaxX = 19.993f / 2;
+		float roomMinZ = -19.993f / 2;
+		float roomMaxZ = 19.993f / 2;
 		float roomMinY = 0.0f;
 		float roomMaxY = 3.98678f;
 		if (fabs(roomMinX - arrow::position.x) < arrow::radius ||
@@ -418,11 +480,39 @@ void renderScene(GLFWwindow* window)
 
 		// column collision
 		float columnRadius = 0.747522f;
+		for (int i = 0; i < columnPosition.size(); i++)
+		{
+			if (!columnExisting[i]) continue;
+			glm::vec3 columnPos = columnPosition[i];
+			float distance = sqrt(
+				(columnPos.x - arrow::position.x) * (columnPos.x - arrow::position.x) +
+				(columnPos.z - arrow::position.z) * (columnPos.z - arrow::position.z)
+			);
+			if (distance < columnRadius + arrow::radius)
+			{
+				arrow::hasBeenShot = false;
+				columnExisting[i] = false;
+			}
+		}
 
 		// torch collision
 		float torchRadius = 0.595796f;
 		float torchMinY = 1.15648f;
 		float torchMaxY = 3.1608f;
+		for (int i = 0; i < torchPosition.size(); i++)
+		{
+			if (!torchExisting[i]) continue;
+			glm::vec3 torchPos = torchPosition[i];
+			float distance = sqrt(
+				(torchPos.x - arrow::position.x) * (torchPos.x - arrow::position.x) +
+				(torchPos.z - arrow::position.z) * (torchPos.z - arrow::position.z)
+			);
+			if (distance < torchRadius + arrow::radius /*&& arrow::position.y > torchMinY && arrow::position.y < torchMaxY*/)
+			{
+				arrow::hasBeenShot = false;
+				torchExisting[i] = false;
+			}
+		}
 
 		// dragon center body part collision
 		float distance = sqrt(
@@ -432,7 +522,10 @@ void renderScene(GLFWwindow* window)
 		);
 		if (distance < arrow::radius)
 		{
+			arrow::hasBeenShot = false;
 			dragon::hasBeenShot = true;
+			dragon::isFalling = true;
+			dragon::fallTime = 0.0f;
 		}
 
 		// rotation matrix
@@ -482,20 +575,27 @@ void renderScene(GLFWwindow* window)
 
 	///// SCENE DRAWING
 
-	drawObjectPBR(models::columnContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
-	drawObjectPBR(models::columnContext, glm::mat4() * glm::translate(glm::vec3(-4.f, 0.0f, -6.0f)), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
-	drawObjectPBR(models::columnContext, glm::mat4() * glm::translate(glm::vec3(-4.f, 0.0f, 6.0f)), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
-	drawObjectPBR(models::columnContext, glm::mat4() * glm::translate(glm::vec3(4.f, 0.0f, -6.0f)), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
-	drawObjectPBR(models::columnContext, glm::mat4() * glm::translate(glm::vec3(4.f, 0.0f, 6.0f)), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+	// columns
+	for (int i = 0; i < columnExisting.size(); i++)
+	{
+		if (columnExisting[i])
+		{
+			drawObjectPBR(models::columnContext, glm::translate(columnPosition[i]), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+		}
+	}
+
+	// torches
+	for (int i = 0; i < torchExisting.size(); i++)
+	{
+		if (torchExisting[i])
+		{
+			drawTorch(glm::translate(torchPosition[i]), torchAngle[i]);
+		}
+	}
+
+	// other
 	drawObjectPBR(models::doorLeftContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
 	drawObjectPBR(models::doorRightContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
-	drawTorch(glm::translate(glm::vec3(0.0f, 0.0f, 0.0f)), 0.0f);
-	drawTorch(glm::translate(glm::vec3(0.0f, 0.0f, 15.9471f)), 0.0f);
-	drawTorch(glm::translate(glm::vec3(0.7f, 0.0f, 0.0f)), 180.0f);
-	drawTorch(glm::translate(glm::vec3(0.7f, 0.0f, -15.9471f)), 180.0f);
-	drawTorch(glm::translate(glm::vec3(-9.74109f/1.5f, 0.0f, -0.47f)), -90.0f);
-	drawTorch(glm::translate(glm::vec3(9.74109f, 0.0f, 0.24f)), 90.0f);
-
 	drawObjectPBR(models::roomContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
 	drawObjectPBR(models::room, glm::mat4(), glm::vec3(0.9f, 0.9f, 0.9f), 0.8f, 0.0f);
 
@@ -554,7 +654,10 @@ void init(GLFWwindow* window)
 	loadModelToContext("./models/dragonCylinder.obj", models::dragonCylinder);
 	loadModelToContext("./models/dragonCone.obj", models::dragonCone);
 
-	initDragon();
+	initColumns();
+	initTorches();
+	initPathPoints();
+	initPath();
 }
 
 void shutdown(GLFWwindow* window)
@@ -630,4 +733,3 @@ void renderLoop(GLFWwindow* window) {
 		glfwPollEvents();
 	}
 }
-//}

@@ -1,39 +1,39 @@
 ﻿  main.cpp
 C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\minwindef.h(130,1): warning C4005: 'APIENTRY': macro redefinition
-C:\Users\marci\Desktop\grk\grk\dependencies\glfw-3.3.8.bin.WIN32\include\GLFW\glfw3.h(123): message : see previous definition of 'APIENTRY'
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(72,30): warning C4305: 'initializing': truncation from 'double' to 'float'
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(262,38): warning C4305: '=': truncation from 'double' to 'float'
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(286,16): warning C4305: 'initializing': truncation from 'double' to 'float'
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(335,13): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(366,13): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(372,108): warning C4305: 'argument': truncation from 'double' to 'T'
+C:\Users\wikto\Desktop\Useless\pliki\studia\5sem\GRK\Projekt\Code\cw 9\dependencies\glfw-3.3.8.bin.WIN32\include\GLFW\glfw3.h(123): message : see previous definition of 'APIENTRY'
+C:\Users\wikto\Desktop\Useless\pliki\studia\5sem\GRK\Projekt\Code\cw 9\src\ex_9_1.hpp(74,30): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\wikto\Desktop\Useless\pliki\studia\5sem\GRK\Projekt\Code\cw 9\src\ex_9_1.hpp(264,38): warning C4305: '=': truncation from 'double' to 'float'
+C:\Users\wikto\Desktop\Useless\pliki\studia\5sem\GRK\Projekt\Code\cw 9\src\ex_9_1.hpp(288,16): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\wikto\Desktop\Useless\pliki\studia\5sem\GRK\Projekt\Code\cw 9\src\ex_9_1.hpp(337,13): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\wikto\Desktop\Useless\pliki\studia\5sem\GRK\Projekt\Code\cw 9\src\ex_9_1.hpp(368,13): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\wikto\Desktop\Useless\pliki\studia\5sem\GRK\Projekt\Code\cw 9\src\ex_9_1.hpp(374,108): warning C4305: 'argument': truncation from 'double' to 'T'
           with
           [
               T=float
           ]
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(402,39): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(403,36): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(404,37): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(408,39): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(409,36): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(410,37): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(414,39): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(415,36): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(416,37): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(420,39): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(421,36): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(422,37): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(426,39): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(427,36): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(428,37): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(483,21): warning C4018: '<': signed/unsigned mismatch
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(502,21): warning C4018: '<': signed/unsigned mismatch
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(546,3): warning C4305: 'argument': truncation from 'double' to 'float'
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(570,2): warning C4305: 'argument': truncation from 'double' to 'float'
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(579,20): warning C4018: '<': signed/unsigned mismatch
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(588,20): warning C4018: '<': signed/unsigned mismatch
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(698,21): warning C4305: '-=': truncation from 'double' to 'float'
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(700,21): warning C4305: '+=': truncation from 'double' to 'float'
+C:\Users\wikto\Desktop\Useless\pliki\studia\5sem\GRK\Projekt\Code\cw 9\src\ex_9_1.hpp(404,39): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
+C:\Users\wikto\Desktop\Useless\pliki\studia\5sem\GRK\Projekt\Code\cw 9\src\ex_9_1.hpp(405,36): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
+C:\Users\wikto\Desktop\Useless\pliki\studia\5sem\GRK\Projekt\Code\cw 9\src\ex_9_1.hpp(406,37): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
+C:\Users\wikto\Desktop\Useless\pliki\studia\5sem\GRK\Projekt\Code\cw 9\src\ex_9_1.hpp(410,39): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
+C:\Users\wikto\Desktop\Useless\pliki\studia\5sem\GRK\Projekt\Code\cw 9\src\ex_9_1.hpp(411,36): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
+C:\Users\wikto\Desktop\Useless\pliki\studia\5sem\GRK\Projekt\Code\cw 9\src\ex_9_1.hpp(412,37): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
+C:\Users\wikto\Desktop\Useless\pliki\studia\5sem\GRK\Projekt\Code\cw 9\src\ex_9_1.hpp(416,39): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
+C:\Users\wikto\Desktop\Useless\pliki\studia\5sem\GRK\Projekt\Code\cw 9\src\ex_9_1.hpp(417,36): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
+C:\Users\wikto\Desktop\Useless\pliki\studia\5sem\GRK\Projekt\Code\cw 9\src\ex_9_1.hpp(418,37): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
+C:\Users\wikto\Desktop\Useless\pliki\studia\5sem\GRK\Projekt\Code\cw 9\src\ex_9_1.hpp(422,39): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
+C:\Users\wikto\Desktop\Useless\pliki\studia\5sem\GRK\Projekt\Code\cw 9\src\ex_9_1.hpp(423,36): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
+C:\Users\wikto\Desktop\Useless\pliki\studia\5sem\GRK\Projekt\Code\cw 9\src\ex_9_1.hpp(424,37): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
+C:\Users\wikto\Desktop\Useless\pliki\studia\5sem\GRK\Projekt\Code\cw 9\src\ex_9_1.hpp(428,39): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
+C:\Users\wikto\Desktop\Useless\pliki\studia\5sem\GRK\Projekt\Code\cw 9\src\ex_9_1.hpp(429,36): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
+C:\Users\wikto\Desktop\Useless\pliki\studia\5sem\GRK\Projekt\Code\cw 9\src\ex_9_1.hpp(430,37): warning C4244: 'argument': conversion from 'float' to 'const unsigned int', possible loss of data
+C:\Users\wikto\Desktop\Useless\pliki\studia\5sem\GRK\Projekt\Code\cw 9\src\ex_9_1.hpp(485,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\wikto\Desktop\Useless\pliki\studia\5sem\GRK\Projekt\Code\cw 9\src\ex_9_1.hpp(504,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\wikto\Desktop\Useless\pliki\studia\5sem\GRK\Projekt\Code\cw 9\src\ex_9_1.hpp(548,3): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\wikto\Desktop\Useless\pliki\studia\5sem\GRK\Projekt\Code\cw 9\src\ex_9_1.hpp(572,2): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\wikto\Desktop\Useless\pliki\studia\5sem\GRK\Projekt\Code\cw 9\src\ex_9_1.hpp(581,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\wikto\Desktop\Useless\pliki\studia\5sem\GRK\Projekt\Code\cw 9\src\ex_9_1.hpp(590,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\wikto\Desktop\Useless\pliki\studia\5sem\GRK\Projekt\Code\cw 9\src\ex_9_1.hpp(707,21): warning C4305: '-=': truncation from 'double' to 'float'
+C:\Users\wikto\Desktop\Useless\pliki\studia\5sem\GRK\Projekt\Code\cw 9\src\ex_9_1.hpp(709,21): warning C4305: '+=': truncation from 'double' to 'float'
 Box.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/INCREMENTAL:NO' specification
 LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
-  grk-cw9.vcxproj -> C:\Users\marci\Desktop\grk\grk\Debug\grk-cw9.exe
+  grk-cw9.vcxproj -> C:\Users\wikto\Desktop\Useless\pliki\studia\5sem\GRK\Projekt\Code\cw 9\Debug\grk-cw9.exe

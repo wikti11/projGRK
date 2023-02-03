@@ -25,7 +25,6 @@ namespace models
 	Core::RenderContext doorLeftContext;
 	Core::RenderContext doorRightContext;
 	Core::RenderContext roomContext;
-	Core::RenderContext spaceshipContext;
 	Core::RenderContext torchContext;
 	Core::RenderContext torchRingsContext;
 	Core::RenderContext torchHandleContext;
@@ -33,6 +32,8 @@ namespace models
 	Core::RenderContext dragonSphere;
 	Core::RenderContext	dragonCone;
 	Core::RenderContext dragonCylinder;
+	Core::RenderContext lampContext;
+	Core::RenderContext lightSwitchContext;
 }
 
 GLuint depthMapFBO;
@@ -45,7 +46,8 @@ GLuint programTex;
 
 Core::Shader_Loader shaderLoader;
 
-Core::RenderContext shipContext;
+Core::RenderContext arrowContext;
+Core::RenderContext crossbowContext;
 Core::RenderContext sphereContext;
 
 glm::vec3 sunPos = glm::vec3(-4.740971f, 2.149999f, 0.369280f);
@@ -55,8 +57,8 @@ glm::vec3 sunColor = glm::vec3(0.9f, 0.9f, 0.7f) * 5;
 glm::vec3 cameraPos = glm::vec3(0.479490f, 1.250000f, -2.124680f);
 glm::vec3 cameraDir = glm::vec3(-0.354510f, 0.000000f, 0.935054f);
 
-glm::vec3 spaceshipPos = glm::vec3(0.065808f, 1.250000f, -2.189549f);
-glm::vec3 spaceshipDir = glm::vec3(-0.490263f, 0.000000f, 0.871578f);
+glm::vec3 crossbowPos = glm::vec3(0.065808f, 1.250000f, -2.189549f);
+glm::vec3 crossbowDir = glm::vec3(-0.490263f, 0.000000f, 0.871578f);
 GLuint VAO, VBO;
 
 float aspectRatio = 1.f;
@@ -539,7 +541,7 @@ void renderScene(GLFWwindow* window)
 			});
 
 		// draw
-		drawObjectPBR(shipContext,
+		drawObjectPBR(crossbowContext,
 			glm::translate(arrow::position) * arrow::cameraRotrationMatrix * glm::eulerAngleY(glm::pi<float>()) * glm::scale(glm::vec3(0.01f)),
 			glm::vec3(0.1, 0.9, 0.9),
 			0.2, 1.0
@@ -549,12 +551,12 @@ void renderScene(GLFWwindow* window)
 	///// SHIP
 
 	// rotation matrix
-	glm::vec3 spaceshipSide = glm::normalize(glm::cross(spaceshipDir, glm::vec3(0.f, 1.f, 0.f)));
-	glm::vec3 spaceshipUp = glm::normalize(glm::cross(spaceshipSide, spaceshipDir));
+	glm::vec3 crossbowSide = glm::normalize(glm::cross(crossbowDir, glm::vec3(0.f, 1.f, 0.f)));
+	glm::vec3 crossbowUp = glm::normalize(glm::cross(crossbowSide, crossbowDir));
 	glm::mat4 specshipCameraRotrationMatrix = glm::mat4({
-		spaceshipSide.x,spaceshipSide.y,spaceshipSide.z,0,
-		spaceshipUp.x,spaceshipUp.y,spaceshipUp.z ,0,
-		-spaceshipDir.x,-spaceshipDir.y,-spaceshipDir.z,0,
+		crossbowSide.x,crossbowSide.y,crossbowSide.z,0,
+		crossbowUp.x,crossbowUp.y,crossbowUp.z ,0,
+		-crossbowDir.x,-crossbowDir.y,-crossbowDir.z,0,
 		0.,0.,0.,1.,
 		});
 
@@ -564,14 +566,14 @@ void renderScene(GLFWwindow* window)
 	if (dragon::hasBeenShot) shipColor = glm::vec3(0.9, 0.9, 0.1);
 
 	// drawing
-	drawObjectPBR(shipContext,
-		glm::translate(spaceshipPos) * specshipCameraRotrationMatrix * glm::eulerAngleY(glm::pi<float>()) * glm::scale(glm::vec3(0.03f)),
+	drawObjectPBR(crossbowContext,
+		glm::translate(crossbowPos) * specshipCameraRotrationMatrix * glm::eulerAngleY(glm::pi<float>()) * glm::scale(glm::vec3(0.03f)),
 		shipColor, 0.2, 1.0
 	);
 
 	// update
-	spotlightPos = spaceshipPos + 0.2 * spaceshipDir;
-	spotlightConeDir = spaceshipDir;
+	spotlightPos = crossbowPos + 0.2 * crossbowDir;
+	spotlightConeDir = crossbowDir;
 
 	///// SCENE DRAWING
 
@@ -598,6 +600,9 @@ void renderScene(GLFWwindow* window)
 	drawObjectPBR(models::doorRightContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
 	drawObjectPBR(models::roomContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
 	drawObjectPBR(models::room, glm::mat4(), glm::vec3(0.9f, 0.9f, 0.9f), 0.8f, 0.0f);
+
+	drawObjectPBR(models::lightSwitchContext, glm::mat4() * glm::translate(glm::vec3(2.0f, 2.0f, 2.0f)), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+	drawObjectPBR(models::lampContext, glm::mat4() * glm::translate(glm::vec3(3.0f, 3.0f, 3.0f)), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
 
 	//test depth buffer
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -640,15 +645,19 @@ void init(GLFWwindow* window)
 	programTest = shaderLoader.CreateProgram("shaders/test.vert", "shaders/test.frag");
 	programSun = shaderLoader.CreateProgram("shaders/shader_8_sun.vert", "shaders/shader_8_sun.frag");
 
-	loadModelToContext("./models/spaceship.obj", shipContext);
+	loadModelToContext("./models/crossbow.obj", crossbowContext);
+	loadModelToContext("./models/pencil.obj", arrowContext);
+
+
 	loadModelToContext("./models/room.obj", models::roomContext);
-	loadModelToContext("./models/spaceship.obj", models::spaceshipContext);
 	loadModelToContext("./models/column.obj", models::columnContext);
 	loadModelToContext("./models/doorLeft.obj", models::doorLeftContext);
 	loadModelToContext("./models/doorRight.obj", models::doorRightContext);
 	loadModelToContext("./models/torch.obj", models::torchContext);
 	loadModelToContext("./models/torchRings.obj", models::torchRingsContext);
 	loadModelToContext("./models/torchHandle.obj", models::torchHandleContext);
+	loadModelToContext("./models/lamp.obj", models::lampContext);
+	loadModelToContext("./models/lightSwitch.obj", models::lightSwitchContext);
 
 	loadModelToContext("./models/dragonSphere.obj", models::dragonSphere);
 	loadModelToContext("./models/dragonCylinder.obj", models::dragonCylinder);
@@ -668,31 +677,31 @@ void shutdown(GLFWwindow* window)
 //obsluga wejscia
 void processInput(GLFWwindow* window)
 {
-	glm::vec3 spaceshipSide = glm::normalize(glm::cross(spaceshipDir, glm::vec3(0.f, 1.f, 0.f)));
-	glm::vec3 spaceshipUp = glm::vec3(0.f, 1.f, 0.f);
+	glm::vec3 crossbowSide = glm::normalize(glm::cross(crossbowDir, glm::vec3(0.f, 1.f, 0.f)));
+	glm::vec3 crossbowUp = glm::vec3(0.f, 1.f, 0.f);
 	float angleSpeed = 0.05f * deltaTime * 60;
 	float moveSpeed = 0.05f * deltaTime * 60;
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		spaceshipPos += spaceshipDir * moveSpeed;
+		crossbowPos += crossbowDir * moveSpeed;
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		spaceshipPos -= spaceshipDir * moveSpeed;
+		crossbowPos -= crossbowDir * moveSpeed;
 	if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
-		spaceshipPos += spaceshipSide * moveSpeed;
+		crossbowPos += crossbowSide * moveSpeed;
 	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
-		spaceshipPos -= spaceshipSide * moveSpeed;
+		crossbowPos -= crossbowSide * moveSpeed;
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-		spaceshipPos += spaceshipUp * moveSpeed;
+		crossbowPos += crossbowUp * moveSpeed;
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
-		spaceshipPos -= spaceshipUp * moveSpeed;
+		crossbowPos -= crossbowUp * moveSpeed;
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		spaceshipDir = glm::vec3(glm::eulerAngleY(angleSpeed) * glm::vec4(spaceshipDir, 0));
+		crossbowDir = glm::vec3(glm::eulerAngleY(angleSpeed) * glm::vec4(crossbowDir, 0));
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		spaceshipDir = glm::vec3(glm::eulerAngleY(-angleSpeed) * glm::vec4(spaceshipDir, 0));
+		crossbowDir = glm::vec3(glm::eulerAngleY(-angleSpeed) * glm::vec4(crossbowDir, 0));
 
-	cameraPos = spaceshipPos - 0.5 * spaceshipDir + glm::vec3(0, 1, 0) * 0.2f;
-	cameraDir = spaceshipDir;
+	cameraPos = crossbowPos - 0.5 * crossbowDir + glm::vec3(0, 1, 0) * 0.2f;
+	cameraDir = crossbowDir;
 
 	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
 		exposition -= 0.05;
@@ -701,8 +710,8 @@ void processInput(GLFWwindow* window)
 
 	if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
 	{
-		printf("spaceshipPos = glm::vec3(%ff, %ff, %ff);\n", spaceshipPos.x, spaceshipPos.y, spaceshipPos.z);
-		printf("spaceshipDir = glm::vec3(%ff, %ff, %ff);\n", spaceshipDir.x, spaceshipDir.y, spaceshipDir.z);
+		printf("crossbowPos = glm::vec3(%ff, %ff, %ff);\n", crossbowPos.x, crossbowPos.y, crossbowPos.z);
+		printf("crossbowDir = glm::vec3(%ff, %ff, %ff);\n", crossbowDir.x, crossbowDir.y, crossbowDir.z);
 		printf("arrow::position = glm::vec3(%ff, %ff, %ff);\n", arrow::position.x, arrow::position.y, arrow::position.z);
 		printf("arrow::direction = glm::vec3(%ff, %ff, %ff);\n", arrow::direction.x, arrow::direction.y, arrow::direction.z);
 	}
@@ -717,8 +726,8 @@ void processInput(GLFWwindow* window)
 		{
 			arrow::hasBeenShot = true;
 			arrow::time = 0.0f;
-			arrow::position = spaceshipPos;
-			arrow::direction = spaceshipDir;
+			arrow::position = crossbowPos;
+			arrow::direction = crossbowDir;
 		}
 	}
 }

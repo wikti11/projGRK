@@ -659,9 +659,9 @@ void init(GLFWwindow* window)
 	loadModelToContext("./models/lamp.obj", models::lampContext);
 	loadModelToContext("./models/lightSwitch.obj", models::lightSwitchContext);
 
-	loadModelToContext("./models/dragonSphere.obj", models::dragonSphere);
-	loadModelToContext("./models/dragonCylinder.obj", models::dragonCylinder);
-	loadModelToContext("./models/dragonCone.obj", models::dragonCone);
+	loadModelToContext("./models/dragonHead.obj", models::dragonSphere);
+	loadModelToContext("./models/dragonSegment.obj", models::dragonCylinder);
+	loadModelToContext("./models/dragonTail.obj", models::dragonCone);
 
 	initColumns();
 	initTorches();

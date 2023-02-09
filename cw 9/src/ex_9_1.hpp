@@ -136,21 +136,21 @@ void initColumns()
 void initTorches()
 {
 	torchPosition = {
-		{ 0.0f, 0.0f, 0.0f },
-		{ 0.0f, 0.0f, 15.9471f },
-		{ 0.7f, 0.0f, 0.0f },
-		{ 0.7f, 0.0f, -15.9471f },
-		{ -9.74109f / 1.5f, 0.0f, -0.47f },
-		{ 9.74109f, 0.0f, 0.24f },
+		{ -9.57197f, 2.219f, 8.08489f },
+		{-9.57197f, 2.219f, -8.08489f },
+		{ 0.0f, 2.219f, 9.81309f },
+		{ 0.0f, 2.219f, -10.0318f },
+		{ 10.2736f, 2.219f, 8.08489f },
+		{ 10.2736f, 2.219f, -8.08489f },
 	};
 
 	torchAngle = {
 		0.0f,
 		0.0f,
-		180.0f,
-		180.0f,
-		-90.0f,
 		90.0f,
+		-90.0f,
+		180.0f,
+		180.0f,
 	};
 
 	torchExisting = std::vector<bool>(torchPosition.size(), true);
@@ -516,6 +516,17 @@ void renderScene(GLFWwindow* window)
 			}
 		}
 
+		// lamp dimensions taken from blender
+		float lampRadius = 0.302f;
+		float lampMinY = -0.27746f;
+		float lampMaxY = 0.19236f;
+		
+		//light switch dimensions taken from blender
+		float lightSwitchWidth = 0.93044f;
+		float lightSwithcLength = 0.40421f;
+		float lightSwtichMinY = -0.102747f;
+		float lightSwitchMaxY = 0.047115f;
+
 		// dragon center body part collision
 		float distance = sqrt(
 			(body2Position.x - arrow::position.x) * (body2Position.x - arrow::position.x) +
@@ -541,8 +552,8 @@ void renderScene(GLFWwindow* window)
 			});
 
 		// draw
-		drawObjectPBR(crossbowContext,
-			glm::translate(arrow::position) * arrow::cameraRotrationMatrix * glm::eulerAngleY(glm::pi<float>()) * glm::scale(glm::vec3(0.01f)),
+		drawObjectPBR(arrowContext,
+			glm::translate(arrow::position) * arrow::cameraRotrationMatrix * glm::eulerAngleY(glm::pi<float>()) * glm::scale(glm::vec3(0.0625f)),
 			glm::vec3(0.1, 0.9, 0.9),
 			0.2, 1.0
 		);
@@ -646,7 +657,7 @@ void init(GLFWwindow* window)
 	programSun = shaderLoader.CreateProgram("shaders/shader_8_sun.vert", "shaders/shader_8_sun.frag");
 
 	loadModelToContext("./models/crossbow.obj", crossbowContext);
-	loadModelToContext("./models/pencil.obj", arrowContext);
+	loadModelToContext("./models/arrow.obj", arrowContext);
 
 
 	loadModelToContext("./models/room.obj", models::roomContext);

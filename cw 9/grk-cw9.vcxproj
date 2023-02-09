@@ -27,6 +27,7 @@
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\ex_9_1.hpp" />
     <ClInclude Include="src\objload.h" />
+    <ClInclude Include="src\pbr_multiple.hpp" />
     <ClInclude Include="src\Render_Utils.h" />
     <ClInclude Include="src\Shader_Loader.h" />
     <ClInclude Include="src\SOIL\image_DXT.h" />
@@ -42,6 +43,8 @@
     <None Include="shaders\shader_9_1.vert" />
     <None Include="shaders\shader_8_sun.frag" />
     <None Include="shaders\shader_8_sun.vert" />
+    <None Include="shaders\shader_PBR.frag" />
+    <None Include="shaders\shader_PBR.vert" />
     <None Include="shaders\test.frag" />
     <None Include="shaders\test.vert" />
   </ItemGroup>
@@ -57,7 +60,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>

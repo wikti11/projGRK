@@ -7,6 +7,7 @@
 
 #include "Shader_Loader.h"
 #include "Render_Utils.h"
+#include "Texture.h"
 #include "Spline.cpp"
 
 #include "Box.cpp"
@@ -34,6 +35,27 @@ namespace models
 	Core::RenderContext dragonCylinder;
 	Core::RenderContext lampContext;
 	Core::RenderContext lightSwitchContext;
+	Core::RenderContext arrowContext;
+	Core::RenderContext crossbowContext;
+	Core::RenderContext sphereContext;
+}
+
+namespace crossbowTexture
+{
+	GLuint albedo;
+	GLuint normal;
+	GLuint ambientOcclusion;
+	GLuint roughness;
+	GLuint metalness;
+}
+
+namespace columnTexture
+{
+	GLuint albedo;
+	GLuint normal;
+	GLuint ambientOcclusion;
+	GLuint roughness;
+	GLuint metalness;
 }
 
 GLuint depthMapFBO;
@@ -43,12 +65,9 @@ GLuint program;
 GLuint programSun;
 GLuint programTest;
 GLuint programTex;
+GLuint programPBR;
 
 Core::Shader_Loader shaderLoader;
-
-Core::RenderContext arrowContext;
-Core::RenderContext crossbowContext;
-Core::RenderContext sphereContext;
 
 glm::vec3 sunPos = glm::vec3(-4.740971f, 2.149999f, 0.369280f);
 glm::vec3 sunDir = glm::vec3(-0.93633f, 0.351106, 0.003226f);
@@ -76,12 +95,62 @@ float spotlightPhi = 3.14 / 4;
 float lastTime = -1.f;
 float deltaTime = 0.f;
 
-std::vector<glm::vec3> columnPosition;
-std::vector<bool> columnExisting;
+glm::vec3 lightColor = glm::vec3(0.9, 0.7, 0.8) * 100;
 
-std::vector<glm::vec3> torchPosition;
-std::vector<float> torchAngle;
-std::vector<bool> torchExisting;
+// Lista pozycji oświetlenia (źródeł światła)
+std::vector<glm::vec3> lightPositions = {
+	glm::vec3(0.0f, 0.0f, 0.0f), // 1
+	glm::vec3(25.0f, 0.0f, 0.0f), // 2
+	glm::vec3(10.0f, 10.0f, 0.0f), // 3
+	glm::vec3(-20.0f, 0.0f, 15.0f), // 4
+	glm::vec3(14.0f, 0.0f, 5.0f), // 5
+	glm::vec3(-14.0f, 0.0f, 10.0f), // 6
+	glm::vec3(4.0f, 20.0f, 15.0f), // 7
+	glm::vec3(-40.0f, 0.0f, 30.0f), // 8
+	glm::vec3(50.0f, 0.0f, 0.0f), // 9
+	glm::vec3(50.0f, 0.0f, 50.0f), // 10
+};
+
+// Lista kolorów oświetlenia
+std::vector<glm::vec3> lightColors = {
+	lightColor, // 1
+	lightColor, // 2
+	lightColor, // 3
+	lightColor, // 4
+	lightColor, // 5
+	lightColor, // 6
+	lightColor, // 7
+	lightColor, // 8
+	lightColor, // 9
+	lightColor, // 10
+};
+
+std::vector<glm::vec3> columnPosition = {
+	{0.0f, 0.0f, 0.0f},
+	{-4.f, 0.0f, -6.0f},
+	{-4.f, 0.0f, 6.0f},
+	{4.f, 0.0f, -6.0f},
+	{4.f, 0.0f, 6.0f},
+};
+std::vector<bool> columnExisting = std::vector<bool>(columnPosition.size(), true);
+
+std::vector<glm::vec3> torchPosition = {
+	{ -9.57197f, 2.219f, 8.08489f },
+	{-9.57197f, 2.219f, -8.08489f },
+	{ 0.0f, 2.219f, 9.81309f },
+	{ 0.0f, 2.219f, -10.0318f },
+	{ 10.2736f, 2.219f, 8.08489f },
+	{ 10.2736f, 2.219f, -8.08489f },
+};
+std::vector<float> torchAngle = {
+	0.0f,
+	0.0f,
+	90.0f,
+	-90.0f,
+	180.0f,
+	180.0f,
+};
+std::vector<bool> torchExisting = std::vector<bool>(torchPosition.size(), true);
 
 namespace dragon
 {
@@ -106,6 +175,7 @@ namespace dragon
 	float fallSpeed = 1.0f;
 	float fallTime = 1.0f;
 }
+
 namespace arrow
 {
 	glm::vec3 position = glm::vec3(1.0f);
@@ -120,43 +190,7 @@ namespace arrow
 	bool hasBeenShot = false;
 }
 
-void initColumns()
-{
-	columnPosition = {
-		{0.0f, 0.0f, 0.0f},
-		{-4.f, 0.0f, -6.0f},
-		{-4.f, 0.0f, 6.0f},
-		{4.f, 0.0f, -6.0f},
-		{4.f, 0.0f, 6.0f},
-	};
-
-	columnExisting = std::vector<bool>(columnPosition.size(), true);
-}
-
-void initTorches()
-{
-	torchPosition = {
-		{ -9.57197f, 2.219f, 8.08489f },
-		{-9.57197f, 2.219f, -8.08489f },
-		{ 0.0f, 2.219f, 9.81309f },
-		{ 0.0f, 2.219f, -10.0318f },
-		{ 10.2736f, 2.219f, 8.08489f },
-		{ 10.2736f, 2.219f, -8.08489f },
-	};
-
-	torchAngle = {
-		0.0f,
-		0.0f,
-		90.0f,
-		-90.0f,
-		180.0f,
-		180.0f,
-	};
-
-	torchExisting = std::vector<bool>(torchPosition.size(), true);
-}
-
-void initPathPoints()
+void initPath()
 {
 	dragon::path.points = {
 	{  0.0f, 1.0f, 0.0f },
@@ -205,10 +239,7 @@ void initPathPoints()
 	{  0.0f, 1.0f, -1.0f },
 	{  0.0f, 1.0f, 0.0f },
 	};
-}
 
-void initPath()
-{
 	dragon::step = dragon::path.points.size() / (float)dragon::n;
 
 	dragon::normal = std::vector<glm::vec3>(dragon::n, glm::vec3(1.0f));
@@ -302,9 +333,35 @@ glm::mat4 createPerspectiveMatrix()
 	return perspectiveMatrix;
 }
 
+// PBR + tekstury + normal mapping
+void drawObjectTexture(Core::RenderContext& context, glm::mat4 modelMatrix, GLuint AlbedoMap, GLuint NormalMap, GLuint AmbientOcclusionMap, GLuint RoughnessMap, GLuint MetalnessMap)
+{
+	glUseProgram(programPBR);
+	glm::mat4 viewProjectionMatrix = createPerspectiveMatrix() * createCameraMatrix();
+	glm::mat4 transformation = viewProjectionMatrix * modelMatrix;
+	glUniformMatrix4fv(glGetUniformLocation(programPBR, "transformation"), 1, GL_FALSE, (float*)&transformation);
+	glUniformMatrix4fv(glGetUniformLocation(programPBR, "modelMatrix"), 1, GL_FALSE, (float*)&modelMatrix);
+	glUniform1f(glGetUniformLocation(programPBR, "exposition"), exposition);
+	glUniform3f(glGetUniformLocation(programPBR, "cameraPos"), cameraPos.x, cameraPos.y, cameraPos.z);
+
+	for (int i = 0; i < 10; i++)
+	{
+		std::string number = std::to_string(i);
+		glUniform3f(glGetUniformLocation(programPBR, ("pointLights[" + number + "]").c_str()), lightPositions[i].x, lightPositions[i].y, lightPositions[i].z);
+		glUniform3f(glGetUniformLocation(programPBR, ("pointLightsColors[" + number + "]").c_str()), lightColors[i].x, lightColors[i].y, lightColors[i].z);
+	}
+
+	Core::SetActiveTexture(AlbedoMap, "albedoMap", programPBR, 0);
+	Core::SetActiveTexture(NormalMap, "normalMap", programPBR, 1);
+	Core::SetActiveTexture(AmbientOcclusionMap, "aoMap", programPBR, 2);
+	Core::SetActiveTexture(RoughnessMap, "roughMap", programPBR, 3);
+	Core::SetActiveTexture(MetalnessMap, "metalMap", programPBR, 4);
+	Core::DrawContext(context);
+}
+
 void drawObjectPBR(Core::RenderContext& context, glm::mat4 modelMatrix, glm::vec3 color, float roughness, float metallic)
 {
-
+	glUseProgram(program);
 	glm::mat4 viewProjectionMatrix = createPerspectiveMatrix() * createCameraMatrix();
 	glm::mat4 transformation = viewProjectionMatrix * modelMatrix;
 	glUniformMatrix4fv(glGetUniformLocation(program, "transformation"), 1, GL_FALSE, (float*)&transformation);
@@ -336,12 +393,8 @@ void drawObjectPBR(Core::RenderContext& context, glm::mat4 modelMatrix, glm::vec
 void renderShadowapSun() {
 	float time = glfwGetTime();
 	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+
 	//uzupelnij o renderowanie glebokosci do tekstury
-
-
-
-
-
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, WIDTH, HEIGHT);
@@ -350,7 +403,6 @@ void renderShadowapSun() {
 
 // torch consists of 3 main elements so everything is put here to simplify it
 // they don't rotate no matter if i use matrix, glm::rotate or glm::eulerAngle
-
 void drawTorch(glm::mat4 translationMatrix, float angle)
 {
 	drawObjectPBR(models::torchContext, glm::mat4() * translationMatrix * glm::eulerAngleY(glm::radians(angle)), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
@@ -375,7 +427,7 @@ void renderScene(GLFWwindow* window)
 	glUniformMatrix4fv(glGetUniformLocation(programSun, "transformation"), 1, GL_FALSE, (float*)&transformation);
 	glUniform3f(glGetUniformLocation(programSun, "color"), sunColor.x / 2, sunColor.y / 2, sunColor.z / 2);
 	glUniform1f(glGetUniformLocation(programSun, "exposition"), exposition);
-	Core::DrawContext(sphereContext);
+	//Core::DrawContext(sphereContext);
 	glUseProgram(program);
 
 	///// DRAGON
@@ -457,7 +509,7 @@ void renderScene(GLFWwindow* window)
 	{
 		// update
 		arrow::time += deltaTime;
-		arrow::flySpeed = 0.05f * deltaTime * 60;
+		arrow::flySpeed = 0.5f * deltaTime * 60;
 		arrow::fallSpeed = 0.01f * deltaTime * 60;
 		arrow::position += arrow::direction * arrow::flySpeed;
 		arrow::position -= arrow::up * arrow::fallSpeed * arrow::time;
@@ -520,7 +572,7 @@ void renderScene(GLFWwindow* window)
 		float lampRadius = 0.302f;
 		float lampMinY = -0.27746f;
 		float lampMaxY = 0.19236f;
-		
+
 		//light switch dimensions taken from blender
 		float lightSwitchWidth = 0.93044f;
 		float lightSwithcLength = 0.40421f;
@@ -552,19 +604,19 @@ void renderScene(GLFWwindow* window)
 			});
 
 		// draw
-		drawObjectPBR(arrowContext,
-			glm::translate(arrow::position) * arrow::cameraRotrationMatrix * glm::eulerAngleY(glm::pi<float>()) * glm::scale(glm::vec3(0.0625f)),
+		drawObjectPBR(models::arrowContext,
+			glm::translate(arrow::position) * arrow::cameraRotrationMatrix * glm::eulerAngleY(glm::pi<float>()) * glm::scale(glm::vec3(0.5)),
 			glm::vec3(0.1, 0.9, 0.9),
 			0.2, 1.0
 		);
 	}
 
-	///// SHIP
+	///// CROSSBOW
 
 	// rotation matrix
 	glm::vec3 crossbowSide = glm::normalize(glm::cross(crossbowDir, glm::vec3(0.f, 1.f, 0.f)));
 	glm::vec3 crossbowUp = glm::normalize(glm::cross(crossbowSide, crossbowDir));
-	glm::mat4 specshipCameraRotrationMatrix = glm::mat4({
+	glm::mat4 crossbowCameraRotrationMatrix = glm::mat4({
 		crossbowSide.x,crossbowSide.y,crossbowSide.z,0,
 		crossbowUp.x,crossbowUp.y,crossbowUp.z ,0,
 		-crossbowDir.x,-crossbowDir.y,-crossbowDir.z,0,
@@ -572,15 +624,17 @@ void renderScene(GLFWwindow* window)
 		});
 
 	// color
-	glm::vec3 shipColor = glm::vec3(0.1, 0.9, 0.1);
-	if (arrow::hasBeenShot) shipColor = glm::vec3(0.9, 0.1, 0.1);
-	if (dragon::hasBeenShot) shipColor = glm::vec3(0.9, 0.9, 0.1);
+	glm::vec3 crossbowColor = glm::vec3(0.1, 0.9, 0.1);
+	if (arrow::hasBeenShot) crossbowColor = glm::vec3(0.9, 0.1, 0.1);
+	if (dragon::hasBeenShot) crossbowColor = glm::vec3(0.9, 0.9, 0.1);
 
 	// drawing
-	drawObjectPBR(crossbowContext,
-		glm::translate(crossbowPos) * specshipCameraRotrationMatrix * glm::eulerAngleY(glm::pi<float>()) * glm::scale(glm::vec3(0.03f)),
-		shipColor, 0.2, 1.0
-	);
+	//drawObjectPBR(models::crossbowContext,
+	//	glm::translate(crossbowPos)* crossbowCameraRotrationMatrix* glm::eulerAngleY(glm::pi<float>())* glm::scale(glm::vec3(0.03f)),
+	//	crossbowColor, 0.2, 1.0);
+	drawObjectTexture(models::crossbowContext,
+		glm::translate(crossbowPos)* crossbowCameraRotrationMatrix* glm::eulerAngleY(glm::pi<float>())* glm::scale(glm::vec3(0.03f)),
+		crossbowTexture::albedo, crossbowTexture::normal, crossbowTexture::ambientOcclusion, crossbowTexture::roughness, crossbowTexture::metalness);
 
 	// update
 	spotlightPos = crossbowPos + 0.2 * crossbowDir;
@@ -593,7 +647,9 @@ void renderScene(GLFWwindow* window)
 	{
 		if (columnExisting[i])
 		{
-			drawObjectPBR(models::columnContext, glm::translate(columnPosition[i]), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+			//drawObjectPBR(models::columnContext, glm::translate(columnPosition[i]), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+			drawObjectTexture(models::columnContext, glm::translate(columnPosition[i]),
+				crossbowTexture::albedo, crossbowTexture::normal, crossbowTexture::ambientOcclusion, crossbowTexture::roughness, crossbowTexture::metalness);
 		}
 	}
 
@@ -650,16 +706,15 @@ void loadModelToContext(std::string path, Core::RenderContext& context)
 void init(GLFWwindow* window)
 {
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
 	glEnable(GL_DEPTH_TEST);
+
+	// shaders
 	program = shaderLoader.CreateProgram("shaders/shader_9_1.vert", "shaders/shader_9_1.frag");
 	programTest = shaderLoader.CreateProgram("shaders/test.vert", "shaders/test.frag");
 	programSun = shaderLoader.CreateProgram("shaders/shader_8_sun.vert", "shaders/shader_8_sun.frag");
+	programPBR = shaderLoader.CreateProgram("shaders/shader_PBR.vert", "shaders/shader_PBR.frag");
 
-	loadModelToContext("./models/crossbow.obj", crossbowContext);
-	loadModelToContext("./models/arrow.obj", arrowContext);
-
-
+	// models
 	loadModelToContext("./models/room.obj", models::roomContext);
 	loadModelToContext("./models/column.obj", models::columnContext);
 	loadModelToContext("./models/doorLeft.obj", models::doorLeftContext);
@@ -669,14 +724,27 @@ void init(GLFWwindow* window)
 	loadModelToContext("./models/torchHandle.obj", models::torchHandleContext);
 	loadModelToContext("./models/lamp.obj", models::lampContext);
 	loadModelToContext("./models/lightSwitch.obj", models::lightSwitchContext);
-
 	loadModelToContext("./models/dragonHead.obj", models::dragonSphere);
 	loadModelToContext("./models/dragonSegment.obj", models::dragonCylinder);
 	loadModelToContext("./models/dragonTail.obj", models::dragonCone);
+	loadModelToContext("./models/crossbow.obj", models::crossbowContext);
+	loadModelToContext("./models/arrow.obj", models::arrowContext);
 
-	initColumns();
-	initTorches();
-	initPathPoints();
+	// crossbow textures
+	crossbowTexture::albedo = Core::LoadTexture("textures/crossbow/albeido.png");
+	crossbowTexture::normal = Core::LoadTexture("textures/crossbow/normal.png");
+	crossbowTexture::ambientOcclusion = Core::LoadTexture("textures/crossbow/amr.png");
+	crossbowTexture::roughness = Core::LoadTexture("textures/crossbow/amr.png");
+	crossbowTexture::metalness = Core::LoadTexture("textures/crossbow/amr.png");
+
+	// column textures
+	columnTexture::albedo = Core::LoadTexture("textures/column/albeido.png");
+	columnTexture::normal = Core::LoadTexture("textures/column/normal.png");
+	columnTexture::ambientOcclusion = Core::LoadTexture("textures/column/amr.png");
+	columnTexture::roughness = Core::LoadTexture("textures/column/amr.png");
+	columnTexture::metalness = Core::LoadTexture("textures/column/amr.png");
+
+	// other
 	initPath();
 }
 

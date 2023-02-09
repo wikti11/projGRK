@@ -92,6 +92,9 @@
     <ClInclude Include="src\ex_9_1.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\pbr_multiple.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\shader_8_sun.vert">
@@ -110,6 +113,12 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="shaders\test.vert">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="shaders\shader_PBR.frag">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="shaders\shader_PBR.vert">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

@@ -58,6 +58,80 @@ namespace columnTexture
 	GLuint metalness;
 }
 
+namespace roomTexture
+{
+	GLuint albedo;
+	GLuint normal;
+	GLuint ambientOcclusion;
+	GLuint roughness;
+	GLuint metalness;
+}
+
+namespace torchTexture
+{
+	GLuint albedo;
+	GLuint normal;
+	GLuint ambientOcclusion;
+	GLuint roughness;
+	GLuint metalness;
+}
+
+namespace torchHandleTexture
+{
+	GLuint albedo;
+	GLuint normal;
+	GLuint ambientOcclusion;
+	GLuint roughness;
+	GLuint metalness;
+}
+
+namespace torchRingsTexture
+{
+	GLuint albedo;
+	GLuint normal;
+	GLuint ambientOcclusion;
+	GLuint roughness;
+	GLuint metalness;
+}
+
+namespace arrowTexture
+{
+	GLuint albedo;
+	GLuint normal;
+	GLuint ambientOcclusion;
+	GLuint roughness;
+	GLuint metalness;
+}
+
+
+namespace lampTexture
+{
+	GLuint albedo;
+	GLuint normal;
+	GLuint ambientOcclusion;
+	GLuint roughness;
+	GLuint metalness;
+}
+
+
+namespace lightSwitchTexture
+{
+	GLuint albedo;
+	GLuint normal;
+	GLuint ambientOcclusion;
+	GLuint roughness;
+	GLuint metalness;
+}
+
+namespace doorTexture
+{
+	GLuint albedo;
+	GLuint normal;
+	GLuint ambientOcclusion;
+	GLuint roughness;
+	GLuint metalness;
+}
+
 GLuint depthMapFBO;
 GLuint depthMap;
 
@@ -405,9 +479,17 @@ void renderShadowapSun() {
 // they don't rotate no matter if i use matrix, glm::rotate or glm::eulerAngle
 void drawTorch(glm::mat4 translationMatrix, float angle)
 {
-	drawObjectPBR(models::torchContext, glm::mat4() * translationMatrix * glm::eulerAngleY(glm::radians(angle)), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
-	drawObjectPBR(models::torchRingsContext, glm::mat4() * translationMatrix * glm::eulerAngleY(glm::radians(angle)), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
-	drawObjectPBR(models::torchHandleContext, glm::mat4() * translationMatrix * glm::eulerAngleY(glm::radians(angle)), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+
+	//drawObjectPBR(models::torchContext, glm::mat4() * translationMatrix * glm::eulerAngleY(glm::radians(angle)), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+	//drawObjectPBR(models::torchRingsContext, glm::mat4() * translationMatrix * glm::eulerAngleY(glm::radians(angle)), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+	//drawObjectPBR(models::torchHandleContext, glm::mat4() * translationMatrix * glm::eulerAngleY(glm::radians(angle)), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+
+	drawObjectTexture(models::torchContext, glm::mat4() * translationMatrix * glm::eulerAngleY(glm::radians(angle)),
+		torchTexture::albedo, torchTexture::normal, torchTexture::ambientOcclusion, torchTexture::roughness, torchTexture::metalness);
+	drawObjectTexture(models::torchRingsContext, glm::mat4() * translationMatrix * glm::eulerAngleY(glm::radians(angle)),
+		torchRingsTexture::albedo, torchRingsTexture::normal, torchRingsTexture::ambientOcclusion, torchRingsTexture::roughness, torchRingsTexture::metalness);
+	drawObjectTexture(models::torchHandleContext, glm::mat4() * translationMatrix * glm::eulerAngleY(glm::radians(angle)),
+		torchHandleTexture::albedo, torchHandleTexture::normal, torchHandleTexture::ambientOcclusion, torchHandleTexture::roughness, torchHandleTexture::metalness);
 }
 
 void renderScene(GLFWwindow* window)
@@ -604,11 +686,9 @@ void renderScene(GLFWwindow* window)
 			});
 
 		// draw
-		drawObjectPBR(models::arrowContext,
+		drawObjectTexture(models::arrowContext,
 			glm::translate(arrow::position) * arrow::cameraRotrationMatrix * glm::eulerAngleY(glm::pi<float>()) * glm::scale(glm::vec3(0.5)),
-			glm::vec3(0.1, 0.9, 0.9),
-			0.2, 1.0
-		);
+			arrowTexture::albedo, arrowTexture::normal, arrowTexture::ambientOcclusion, arrowTexture::roughness, arrowTexture::metalness);
 	}
 
 	///// CROSSBOW
@@ -649,7 +729,7 @@ void renderScene(GLFWwindow* window)
 		{
 			//drawObjectPBR(models::columnContext, glm::translate(columnPosition[i]), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
 			drawObjectTexture(models::columnContext, glm::translate(columnPosition[i]),
-				crossbowTexture::albedo, crossbowTexture::normal, crossbowTexture::ambientOcclusion, crossbowTexture::roughness, crossbowTexture::metalness);
+				columnTexture::albedo, columnTexture::normal, columnTexture::ambientOcclusion, columnTexture::roughness, columnTexture::metalness);
 		}
 	}
 
@@ -663,13 +743,20 @@ void renderScene(GLFWwindow* window)
 	}
 
 	// other
-	drawObjectPBR(models::doorLeftContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
-	drawObjectPBR(models::doorRightContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
-	drawObjectPBR(models::roomContext, glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
-	drawObjectPBR(models::room, glm::mat4(), glm::vec3(0.9f, 0.9f, 0.9f), 0.8f, 0.0f);
+	drawObjectTexture(models::doorLeftContext, glm::mat4(),
+		doorTexture::albedo, doorTexture::normal, doorTexture::ambientOcclusion, doorTexture::roughness, doorTexture::metalness);
+	drawObjectTexture(models::doorRightContext, glm::mat4(),
+		doorTexture::albedo, doorTexture::normal, doorTexture::ambientOcclusion, doorTexture::roughness, doorTexture::metalness);
+	
 
-	drawObjectPBR(models::lightSwitchContext, glm::mat4() * glm::translate(glm::vec3(2.0f, 2.0f, 2.0f)), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
-	drawObjectPBR(models::lampContext, glm::mat4() * glm::translate(glm::vec3(3.0f, 3.0f, 3.0f)), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+	drawObjectTexture(models::roomContext, glm::mat4(),
+		roomTexture::albedo, roomTexture::normal, roomTexture::ambientOcclusion, roomTexture::roughness, roomTexture::metalness);
+//	drawObjectPBR(models::room, glm::mat4(), glm::vec3(0.9f, 0.9f, 0.9f), 0.8f, 0.0f);
+
+	drawObjectTexture(models::lightSwitchContext, glm::mat4()* glm::translate(glm::vec3(2.0f, 2.0f, 2.0f)), 
+		lightSwitchTexture::albedo, lightSwitchTexture::normal, lightSwitchTexture::ambientOcclusion, lightSwitchTexture::roughness, lightSwitchTexture::metalness);
+	drawObjectTexture(models::lampContext, glm::mat4()* glm::translate(glm::vec3(3.0f, 3.0f, 3.0f)),
+		lampTexture::albedo, lampTexture::normal, lampTexture::ambientOcclusion, lampTexture::roughness, lampTexture::metalness);
 
 	//test depth buffer
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -731,18 +818,74 @@ void init(GLFWwindow* window)
 	loadModelToContext("./models/arrow.obj", models::arrowContext);
 
 	// crossbow textures
-	crossbowTexture::albedo = Core::LoadTexture("textures/crossbow/albeido.png");
+	crossbowTexture::albedo = Core::LoadTexture("textures/crossbow/albedo.jpg");
 	crossbowTexture::normal = Core::LoadTexture("textures/crossbow/normal.png");
-	crossbowTexture::ambientOcclusion = Core::LoadTexture("textures/crossbow/amr.png");
-	crossbowTexture::roughness = Core::LoadTexture("textures/crossbow/amr.png");
-	crossbowTexture::metalness = Core::LoadTexture("textures/crossbow/amr.png");
+	crossbowTexture::ambientOcclusion = Core::LoadTexture("textures/crossbow/ambientOcclusion.png");
+	crossbowTexture::roughness = Core::LoadTexture("textures/crossbow/roughness.png");
+	crossbowTexture::metalness = Core::LoadTexture("textures/crossbow/metalness.png");
 
 	// column textures
-	columnTexture::albedo = Core::LoadTexture("textures/column/albeido.png");
+	columnTexture::albedo = Core::LoadTexture("textures/column/albedo.jpg");
 	columnTexture::normal = Core::LoadTexture("textures/column/normal.png");
-	columnTexture::ambientOcclusion = Core::LoadTexture("textures/column/amr.png");
-	columnTexture::roughness = Core::LoadTexture("textures/column/amr.png");
-	columnTexture::metalness = Core::LoadTexture("textures/column/amr.png");
+	columnTexture::ambientOcclusion = Core::LoadTexture("textures/column/ambientOcclusion.png");
+	columnTexture::roughness = Core::LoadTexture("textures/column/roughness.png");
+	columnTexture::metalness = Core::LoadTexture("textures/column/roughness.png");
+
+	//torch textures
+	torchHandleTexture::albedo = Core::LoadTexture("textures/torchHandle/albedo.jpg");
+	torchHandleTexture::normal = Core::LoadTexture("textures/torchHandle/normal.png");
+	torchHandleTexture::ambientOcclusion = Core::LoadTexture("textures/torchHandle/ambientOcclusion.png");
+	torchHandleTexture::roughness = Core::LoadTexture("textures/torchHandle/roughness.png");
+	torchHandleTexture::metalness = Core::LoadTexture("textures/torchHandle/metalness.png");
+
+	torchTexture::albedo = Core::LoadTexture("textures/torch/albedo.jpg");
+	torchTexture::normal = Core::LoadTexture("textures/torch/normal.png");
+	torchTexture::ambientOcclusion = Core::LoadTexture("textures/torch/ambientOcclusion.png");
+	torchTexture::roughness = Core::LoadTexture("textures/torch/roughness.png");
+	torchTexture::metalness = Core::LoadTexture("textures/torch/metalness.png");
+
+	torchRingsTexture::albedo = Core::LoadTexture("textures/torchRings/albedo.jpg");
+	torchRingsTexture::normal = Core::LoadTexture("textures/torchRings/normal.png");
+	torchRingsTexture::ambientOcclusion = Core::LoadTexture("textures/torchRings/ambientOcclusion.png");
+	torchRingsTexture::roughness = Core::LoadTexture("textures/torchRings/roughness.png");
+	torchRingsTexture::metalness = Core::LoadTexture("textures/torchRings/metalness.png");
+
+	//room textures darkened USE albedoOriginal.jpg TO GET BRIGHT TEXTURE
+	roomTexture::albedo = Core::LoadTexture("textures/room/albedo.jpg");
+	roomTexture::normal = Core::LoadTexture("textures/room/normal.png");
+	roomTexture::ambientOcclusion = Core::LoadTexture("textures/room/ambientOcclusion.png");
+	roomTexture::roughness = Core::LoadTexture("textures/room/roughness.png");
+	roomTexture::metalness = Core::LoadTexture("textures/room/metalness.png");
+
+
+	//there wasn't any ambientOcclusion for lamp
+	lampTexture::albedo = Core::LoadTexture("textures/lamp/albedo.jpg");
+	lampTexture::normal = Core::LoadTexture("textures/lamp/normal.png");
+	//lampTexture::ambientOcclusion = Core::LoadTexture("textures/lamp/ambientOcclusion.png");
+	lampTexture::roughness = Core::LoadTexture("textures/lamp/metalness.png");
+	lampTexture::metalness = Core::LoadTexture("textures/lamp/metalness.png");
+
+	//light switch textures
+	lightSwitchTexture::albedo = Core::LoadTexture("textures/lightSwitch/albedo.jpg");
+	lightSwitchTexture::normal = Core::LoadTexture("textures/lightSwitch/normal.png");
+	lightSwitchTexture::ambientOcclusion = Core::LoadTexture("textures/lightSwitch/ambientOcclusion.png");
+	lightSwitchTexture::roughness = Core::LoadTexture("textures/lightSwitch/roughness.png");
+	lightSwitchTexture::metalness = Core::LoadTexture("textures/lightSwitch/metalness.png");
+
+
+	//there wasn't any ambientOcclusion for arrow
+	arrowTexture::albedo = Core::LoadTexture("textures/arrow/albedo.jpg");
+	arrowTexture::normal = Core::LoadTexture("textures/arrow/normal.png");
+	//arrowTexture::ambientOcclusion = Core::LoadTexture("textures/arrow/ambientOcclusion.png");
+	arrowTexture::roughness = Core::LoadTexture("textures/arrow/roughness.png");
+	arrowTexture::metalness = Core::LoadTexture("textures/arrow/metalness.png");
+
+	//door textures
+	doorTexture::albedo = Core::LoadTexture("textures/door/albedo.jpg");
+	doorTexture::normal = Core::LoadTexture("textures/door/normal.png");
+	doorTexture::ambientOcclusion = Core::LoadTexture("textures/door/ambientOcclusion.png");
+	doorTexture::roughness = Core::LoadTexture("textures/door/roughness.png");
+	doorTexture::metalness = Core::LoadTexture("textures/door/metalness.png");
 
 	// other
 	initPath();

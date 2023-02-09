@@ -2,7 +2,7 @@
 
 #define M_PI 3.1415926535897932384626433832795
 
-vec3 AMBIENT = vec3(0.2);
+vec3 AMBIENT = vec3(0.1);
 
 uniform vec3 pointLights[10];
 uniform vec3 pointLightsColors[10];

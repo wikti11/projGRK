@@ -58,6 +58,15 @@ namespace columnTexture
 	GLuint metalness;
 }
 
+namespace destroyedColumnTexture
+{
+	GLuint albedo;
+	GLuint normal;
+	GLuint ambientOcclusion;
+	GLuint roughness;
+	GLuint metalness;
+}
+
 namespace roomTexture
 {
 	GLuint albedo;
@@ -102,7 +111,6 @@ namespace arrowTexture
 	GLuint roughness;
 	GLuint metalness;
 }
-
 
 namespace lampTexture
 {
@@ -169,36 +177,6 @@ float spotlightPhi = 3.14 / 4;
 float lastTime = -1.f;
 float deltaTime = 0.f;
 
-glm::vec3 lightColor = glm::vec3(0.9, 0.7, 0.8) * 100;
-
-// Lista pozycji oświetlenia (źródeł światła)
-std::vector<glm::vec3> lightPositions = {
-	glm::vec3(0.0f, 0.0f, 0.0f), // 1
-	glm::vec3(25.0f, 0.0f, 0.0f), // 2
-	glm::vec3(10.0f, 10.0f, 0.0f), // 3
-	glm::vec3(-20.0f, 0.0f, 15.0f), // 4
-	glm::vec3(14.0f, 0.0f, 5.0f), // 5
-	glm::vec3(-14.0f, 0.0f, 10.0f), // 6
-	glm::vec3(4.0f, 20.0f, 15.0f), // 7
-	glm::vec3(-40.0f, 0.0f, 30.0f), // 8
-	glm::vec3(50.0f, 0.0f, 0.0f), // 9
-	glm::vec3(50.0f, 0.0f, 50.0f), // 10
-};
-
-// Lista kolorów oświetlenia
-std::vector<glm::vec3> lightColors = {
-	lightColor, // 1
-	lightColor, // 2
-	lightColor, // 3
-	lightColor, // 4
-	lightColor, // 5
-	lightColor, // 6
-	lightColor, // 7
-	lightColor, // 8
-	lightColor, // 9
-	lightColor, // 10
-};
-
 std::vector<glm::vec3> columnPosition = {
 	{0.0f, 0.0f, 0.0f},
 	{-4.f, 0.0f, -6.0f},
@@ -206,7 +184,8 @@ std::vector<glm::vec3> columnPosition = {
 	{4.f, 0.0f, -6.0f},
 	{4.f, 0.0f, 6.0f},
 };
-std::vector<bool> columnExisting = std::vector<bool>(columnPosition.size(), true);
+std::vector<bool> columnDamaged = std::vector<bool>(columnPosition.size(), false);
+std::vector<bool> columnDestroyed = std::vector<bool>(columnPosition.size(), false);
 
 std::vector<glm::vec3> torchPosition = {
 	{ -9.57197f, 2.219f, 8.08489f },
@@ -226,6 +205,61 @@ std::vector<float> torchAngle = {
 };
 std::vector<bool> torchExisting = std::vector<bool>(torchPosition.size(), true);
 
+std::vector<glm::vec3> lampPosition = {
+	{ -9.57197f, 2.219f, 3.81309f },
+	{ -9.57197f, 2.219f, -3.0318f },
+	{ 10.2736f, 2.219f, -3.08489f },
+	{ 10.2736f, 2.219f, 3.08489f },
+};
+std::vector<float> lampAngle = {
+	90.0f,
+	90.0f,
+	-90.0f,
+	-90.0f,
+};
+std::vector<bool> lampSwitchedOn = std::vector<bool>(torchPosition.size(), false);
+
+std::vector<glm::vec3> switchPosition = {
+	{ -9.57197f, 2.219f, 5.08489f },
+	{ -9.57197f, 2.219f, -5.08489f },
+	{ 10.2736f, 2.219f, -5.08489f },
+	{ 10.2736f, 2.219f, 5.08489f },
+};
+std::vector<float> switchAngle = {
+	-90.0f,
+	-90.0f,
+	90.0f,
+	90.0f,
+};
+
+std::vector<glm::vec3> lightPositions = {
+	torchPosition[0],
+	torchPosition[1],
+	torchPosition[2],
+	torchPosition[3],
+	torchPosition[4],
+	torchPosition[5],
+	lampPosition[0],
+	lampPosition[1],
+	lampPosition[2],
+	lampPosition[3],
+};
+
+glm::vec3 lightColor = glm::vec3(0.9, 0.7, 0.8);
+
+std::vector<glm::vec3> lightColors = {
+	lightColor,
+	lightColor,
+	lightColor,
+	lightColor,
+	lightColor,
+	lightColor,
+	lightColor,
+	lightColor,
+	lightColor,
+	lightColor,
+};
+
 namespace dragon
 {
 	bool hasBeenShot = false;
@@ -239,11 +273,11 @@ namespace dragon
 	std::vector<glm::vec3> tangent;
 	std::vector<glm::vec3> bitangent;
 
-	float headIndex = 50;
-	float body1Index = 40;
-	float body2Index = 35;
-	float body3Index = 30;
-	float tailIndex = 25;
+	int headIndex = 100;
+	std::vector<int> bodyIndex = {
+		95,90,85,80,75,70,65,60,55,50,45,40,35,30,25,20,15,10,5
+	};
+	int tailIndex = 0;
 
 	bool isFalling = false;
 	float fallSpeed = 1.0f;
@@ -422,7 +456,10 @@ void drawObjectTexture(Core::RenderContext& context, glm::mat4 modelMatrix, GLui
 	{
 		std::string number = std::to_string(i);
 		glUniform3f(glGetUniformLocation(programPBR, ("pointLights[" + number + "]").c_str()), lightPositions[i].x, lightPositions[i].y, lightPositions[i].z);
-		glUniform3f(glGetUniformLocation(programPBR, ("pointLightsColors[" + number + "]").c_str()), lightColors[i].x, lightColors[i].y, lightColors[i].z);
+		float c = 100.0f;
+		if (i < 6 && !torchExisting[i]) c = 0.0f;
+		if (i >= 6 && !lampSwitchedOn[i - 6]) c = 0.0f;
+		glUniform3f(glGetUniformLocation(programPBR, ("pointLightsColors[" + number + "]").c_str()), lightColors[i].x * c, lightColors[i].y * c, lightColors[i].z * c);
 	}
 
 	Core::SetActiveTexture(AlbedoMap, "albedoMap", programPBR, 0);
@@ -516,9 +553,11 @@ void renderScene(GLFWwindow* window)
 
 	// positions
 	glm::vec3 headPosition = dragon::path.GetSplinePoint(dragon::headIndex * dragon::step, true);
-	glm::vec3 body1Position = dragon::path.GetSplinePoint(dragon::body1Index * dragon::step, true);
-	glm::vec3 body2Position = dragon::path.GetSplinePoint(dragon::body2Index * dragon::step, true);
-	glm::vec3 body3Position = dragon::path.GetSplinePoint(dragon::body3Index * dragon::step, true);
+	std::vector<glm::vec3> bodyPosition = std::vector<glm::vec3>(19, glm::vec3());
+	for (int i = 0; i < bodyPosition.size(); i++)
+	{
+		bodyPosition[i] = dragon::path.GetSplinePoint(dragon::bodyIndex[i] * dragon::step, true);
+	}
 	glm::vec3 tailPosition = dragon::path.GetSplinePoint(dragon::tailIndex * dragon::step, true);
 
 	// falling
@@ -540,24 +579,16 @@ void renderScene(GLFWwindow* window)
 		glm::vec4(dragon::tangent[dragon::headIndex], 0),
 		glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)
 	);
-	glm::mat4 body1Rotation = glm::mat4(
-		glm::vec4(dragon::bitangent[dragon::body1Index], 0),
-		glm::vec4(dragon::normal[dragon::body1Index], 0),
-		glm::vec4(dragon::tangent[dragon::body2Index], 0),
-		glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)
-	);
-	glm::mat4 body2Rotation = glm::mat4(
-		glm::vec4(dragon::bitangent[dragon::body2Index], 0),
-		glm::vec4(dragon::normal[dragon::body2Index], 0),
-		glm::vec4(dragon::tangent[dragon::body2Index], 0),
-		glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)
-	);
-	glm::mat4 body3Rotation = glm::mat4(
-		glm::vec4(dragon::bitangent[dragon::body3Index], 0),
-		glm::vec4(dragon::normal[dragon::body3Index], 0),
-		glm::vec4(dragon::tangent[dragon::body3Index], 0),
-		glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)
-	);
+	std::vector<glm::mat4> bodyRotation = std::vector<glm::mat4>(19, glm::mat4());
+	for (int i = 0; i < bodyRotation.size(); i++)
+	{
+		bodyRotation[i] = glm::mat4(
+			glm::vec4(dragon::bitangent[dragon::bodyIndex[i]], 0),
+			glm::vec4(dragon::normal[dragon::bodyIndex[i]], 0),
+			glm::vec4(dragon::tangent[dragon::bodyIndex[i]], 0),
+			glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)
+		);
+	}
 	glm::mat4 tailRotation = glm::mat4(
 		glm::vec4(dragon::bitangent[dragon::tailIndex], 0),
 		glm::vec4(dragon::normal[dragon::tailIndex], 0),
@@ -569,9 +600,10 @@ void renderScene(GLFWwindow* window)
 	if (!(dragon::hasBeenShot && !dragon::isFalling))
 	{
 		drawObjectPBR(models::dragonSphere, glm::translate(headPosition) * headRotation * glm::scale(glm::vec3(1.0f)), glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, 0.0f);
-		drawObjectPBR(models::dragonCylinder, glm::translate(body1Position) * body1Rotation * glm::scale(glm::vec3(0.7f)), glm::vec3(0.5f, 0.1f, 0.7f), 0.0f, 0.0f);
-		drawObjectPBR(models::dragonCylinder, glm::translate(body2Position) * body2Rotation * glm::scale(glm::vec3(0.7f)), glm::vec3(0.5f, 0.1f, 0.7f), 0.0f, 0.0f);
-		drawObjectPBR(models::dragonCylinder, glm::translate(body3Position) * body3Rotation * glm::scale(glm::vec3(0.7f)), glm::vec3(0.5f, 0.1f, 0.7f), 0.0f, 0.0f);
+		for (int i = 0; i < bodyRotation.size(); i++)
+		{
+			drawObjectPBR(models::dragonCylinder, glm::translate(bodyPosition[i]) * bodyRotation[i] * glm::scale(glm::vec3(0.7f)), glm::vec3(0.5f, 0.1f, 0.7f), 0.0f, 0.0f);
+		}
 		drawObjectPBR(models::dragonCone, glm::translate(tailPosition) * tailRotation * glm::scale(glm::vec3(0.7f)), glm::vec3(0.5f, 0.1f, 0.7f), 0.0f, 0.0f);
 	}
 
@@ -579,9 +611,10 @@ void renderScene(GLFWwindow* window)
 	if (!dragon::isFalling)
 	{
 		dragon::headIndex++; if (dragon::headIndex == dragon::n) dragon::headIndex = 0;
-		dragon::body1Index++; if (dragon::body1Index == dragon::n) dragon::body1Index = 0;
-		dragon::body2Index++; if (dragon::body2Index == dragon::n) dragon::body2Index = 0;
-		dragon::body3Index++; if (dragon::body3Index == dragon::n) dragon::body3Index = 0;
+		for (int i = 0; i < dragon::bodyIndex.size(); i++)
+		{
+			dragon::bodyIndex[i]++; if (dragon::bodyIndex[i] == dragon::n) dragon::bodyIndex[i] = 0;
+		}
 		dragon::tailIndex++; if (dragon::tailIndex == dragon::n) dragon::tailIndex = 0;
 	}
 
@@ -618,7 +651,6 @@ void renderScene(GLFWwindow* window)
 		float columnRadius = 0.747522f;
 		for (int i = 0; i < columnPosition.size(); i++)
 		{
-			if (!columnExisting[i]) continue;
 			glm::vec3 columnPos = columnPosition[i];
 			float distance = sqrt(
 				(columnPos.x - arrow::position.x) * (columnPos.x - arrow::position.x) +
@@ -627,7 +659,14 @@ void renderScene(GLFWwindow* window)
 			if (distance < columnRadius + arrow::radius)
 			{
 				arrow::hasBeenShot = false;
-				columnExisting[i] = false;
+				if (columnDamaged[i])
+				{
+					columnDestroyed[i] = true;
+				}
+				else
+				{
+					columnDamaged[i] = true;
+				}
 			}
 		}
 
@@ -650,22 +689,29 @@ void renderScene(GLFWwindow* window)
 			}
 		}
 
-		// lamp dimensions taken from blender
-		float lampRadius = 0.302f;
-		float lampMinY = -0.27746f;
-		float lampMaxY = 0.19236f;
-
 		//light switch dimensions taken from blender
-		float lightSwitchWidth = 0.93044f;
-		float lightSwithcLength = 0.40421f;
-		float lightSwtichMinY = -0.102747f;
-		float lightSwitchMaxY = 0.047115f;
+		float switchRadius = 0.25f;
+		float switchMinY = 1.5f;
+		float switchMaxY = 2.5f;
+		for (int i = 0; i < switchPosition.size(); i++)
+		{
+			glm::vec3 switchPos = switchPosition[i];
+			float distance = sqrt(
+				(switchPos.x - arrow::position.x) * (switchPos.x - arrow::position.x) +
+				(switchPos.z - arrow::position.z) * (switchPos.z - arrow::position.z)
+			);
+			if (distance < switchRadius + arrow::radius && arrow::position.y > switchMinY && arrow::position.y < switchMaxY)
+			{
+				arrow::hasBeenShot = false;
+				lampSwitchedOn[i] = !lampSwitchedOn[i];
+			}
+		}
 
-		// dragon center body part collision
+		// dragon head collision
 		float distance = sqrt(
-			(body2Position.x - arrow::position.x) * (body2Position.x - arrow::position.x) +
-			(body2Position.y - arrow::position.y) * (body2Position.y - arrow::position.y) +
-			(body2Position.z - arrow::position.z) * (body2Position.z - arrow::position.z)
+			(headPosition.x - arrow::position.x) * (headPosition.x - arrow::position.x) +
+			(headPosition.y - arrow::position.y) * (headPosition.y - arrow::position.y) +
+			(headPosition.z - arrow::position.z) * (headPosition.z - arrow::position.z)
 		);
 		if (distance < arrow::radius)
 		{
@@ -723,18 +769,25 @@ void renderScene(GLFWwindow* window)
 	///// SCENE DRAWING
 
 	// columns
-	for (int i = 0; i < columnExisting.size(); i++)
+	for (int i = 0; i < columnPosition.size(); i++)
 	{
-		if (columnExisting[i])
+		if (columnDamaged[i])
 		{
-			//drawObjectPBR(models::columnContext, glm::translate(columnPosition[i]), glm::vec3(1.0f, 1.0f, 1.0f), 0.0f, 0.0f);
+			if (!columnDestroyed[i])
+			{
+				drawObjectTexture(models::columnContext, glm::translate(columnPosition[i]),
+					destroyedColumnTexture::albedo, destroyedColumnTexture::normal, destroyedColumnTexture::ambientOcclusion, destroyedColumnTexture::roughness, destroyedColumnTexture::metalness);
+			}
+		}
+		else
+		{
 			drawObjectTexture(models::columnContext, glm::translate(columnPosition[i]),
 				columnTexture::albedo, columnTexture::normal, columnTexture::ambientOcclusion, columnTexture::roughness, columnTexture::metalness);
 		}
 	}
 
 	// torches
-	for (int i = 0; i < torchExisting.size(); i++)
+	for (int i = 0; i < torchPosition.size(); i++)
 	{
 		if (torchExisting[i])
 		{
@@ -742,21 +795,27 @@ void renderScene(GLFWwindow* window)
 		}
 	}
 
+	// lamps
+	for (int i = 0; i < lampPosition.size(); i++)
+	{
+		drawObjectTexture(models::lampContext, glm::translate(lampPosition[i]) * glm::eulerAngleY(glm::radians(lampAngle[i])) * glm::scale(glm::vec3(2.0f)),
+			lampTexture::albedo, lampTexture::normal, lampTexture::ambientOcclusion, lampTexture::roughness, lampTexture::metalness);
+	}
+
+	// switches
+	for (int i = 0; i < switchPosition.size(); i++)
+	{
+		drawObjectTexture(models::lightSwitchContext, glm::translate(switchPosition[i]) * glm::eulerAngleY(glm::radians(switchAngle[i])) * glm::scale(glm::vec3(2.0f)),
+			lightSwitchTexture::albedo, lightSwitchTexture::normal, lightSwitchTexture::ambientOcclusion, lightSwitchTexture::roughness, lightSwitchTexture::metalness);
+	}
+
 	// other
 	drawObjectTexture(models::doorLeftContext, glm::mat4(),
 		doorTexture::albedo, doorTexture::normal, doorTexture::ambientOcclusion, doorTexture::roughness, doorTexture::metalness);
 	drawObjectTexture(models::doorRightContext, glm::mat4(),
 		doorTexture::albedo, doorTexture::normal, doorTexture::ambientOcclusion, doorTexture::roughness, doorTexture::metalness);
-	
-
 	drawObjectTexture(models::roomContext, glm::mat4(),
 		roomTexture::albedo, roomTexture::normal, roomTexture::ambientOcclusion, roomTexture::roughness, roomTexture::metalness);
-//	drawObjectPBR(models::room, glm::mat4(), glm::vec3(0.9f, 0.9f, 0.9f), 0.8f, 0.0f);
-
-	drawObjectTexture(models::lightSwitchContext, glm::mat4()* glm::translate(glm::vec3(2.0f, 2.0f, 2.0f)), 
-		lightSwitchTexture::albedo, lightSwitchTexture::normal, lightSwitchTexture::ambientOcclusion, lightSwitchTexture::roughness, lightSwitchTexture::metalness);
-	drawObjectTexture(models::lampContext, glm::mat4()* glm::translate(glm::vec3(3.0f, 3.0f, 3.0f)),
-		lampTexture::albedo, lampTexture::normal, lampTexture::ambientOcclusion, lampTexture::roughness, lampTexture::metalness);
 
 	//test depth buffer
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -824,6 +883,13 @@ void init(GLFWwindow* window)
 	crossbowTexture::roughness = Core::LoadTexture("textures/crossbow/roughness.png");
 	crossbowTexture::metalness = Core::LoadTexture("textures/crossbow/metalness.png");
 
+	// destroyedColumn textures
+	destroyedColumnTexture::albedo = Core::LoadTexture("textures/destroyedColumn/albedo.jpg");
+	destroyedColumnTexture::normal = Core::LoadTexture("textures/destroyedColumn/normal.png");
+	destroyedColumnTexture::ambientOcclusion = Core::LoadTexture("textures/destroyedColumn/ambientOcclusion.png");
+	destroyedColumnTexture::roughness = Core::LoadTexture("textures/destroyedColumn/roughness.png");
+	destroyedColumnTexture::metalness = Core::LoadTexture("textures/destroyedColumn/roughness.png");
+
 	// column textures
 	columnTexture::albedo = Core::LoadTexture("textures/column/albedo.jpg");
 	columnTexture::normal = Core::LoadTexture("textures/column/normal.png");
@@ -852,6 +918,7 @@ void init(GLFWwindow* window)
 
 	//room textures darkened USE albedoOriginal.jpg TO GET BRIGHT TEXTURE
 	roomTexture::albedo = Core::LoadTexture("textures/room/albedo.jpg");
+	//roomTexture::albedo = Core::LoadTexture("textures/room/albedoOriginal.jpg");
 	roomTexture::normal = Core::LoadTexture("textures/room/normal.png");
 	roomTexture::ambientOcclusion = Core::LoadTexture("textures/room/ambientOcclusion.png");
 	roomTexture::roughness = Core::LoadTexture("textures/room/roughness.png");

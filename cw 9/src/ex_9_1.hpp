@@ -3,6 +3,7 @@
 #include "glm.hpp"
 #include "ext.hpp"
 #include <iostream>
+#include <fstream> 
 #include <cmath>
 
 #include "Shader_Loader.h"
@@ -158,8 +159,10 @@ glm::vec3 sunColor = glm::vec3(0.9f, 0.9f, 0.7f) * 5;
 glm::vec3 cameraPos = glm::vec3(0.479490f, 1.250000f, -2.124680f);
 glm::vec3 cameraDir = glm::vec3(-0.354510f, 0.000000f, 0.935054f);
 
-glm::vec3 crossbowPos = glm::vec3(0.065808f, 1.250000f, -2.189549f);
-glm::vec3 crossbowDir = glm::vec3(-0.490263f, 0.000000f, 0.871578f);
+//glm::vec3 crossbowPos = glm::vec3(0.065808f, 1.250000f, -2.189549f);
+//glm::vec3 crossbowDir = glm::vec3(-0.490263f, 0.000000f, 0.871578f);
+glm::vec3 crossbowPos = glm::vec3(-9.0f, 1.25f, -9.0f);
+glm::vec3 crossbowDir = glm::vec3(0.75f, 0.0f, 0.75f);
 GLuint VAO, VBO;
 
 float aspectRatio = 1.f;
@@ -264,7 +267,15 @@ namespace dragon
 {
 	bool hasBeenShot = false;
 
-	Spline path;
+	std::vector<glm::vec3> path1 = std::vector<glm::vec3>(50, glm::vec3(0.0f, 2.0f, 0.0f));
+	std::vector<glm::vec3> path2 = std::vector<glm::vec3>(50, glm::vec3(0.0f, 2.0f, 0.0f));
+	std::vector<glm::vec3> path3 = std::vector<glm::vec3>(50, glm::vec3(0.0f, 2.0f, 0.0f));
+	int currentPath = 1;
+	int currentEditedPath = 1;
+	bool isEditingPath = false;
+	int editedPointIndex = 0;
+
+	Spline spline;
 	int n = 1000;
 	float step = 0.0f;
 	float theta = 0.0f;
@@ -273,10 +284,9 @@ namespace dragon
 	std::vector<glm::vec3> tangent;
 	std::vector<glm::vec3> bitangent;
 
-	int headIndex = 100;
-	std::vector<int> bodyIndex = {
-		95,90,85,80,75,70,65,60,55,50,45,40,35,30,25,20,15,10,5
-	};
+	int headIndex = 42;
+	std::vector<int> bodyIndex = { 38,36,34,32,30,28,26,24,22,20,18,16,14,12,10,8,6,4,2 };
+	//std::vector<int> bodyIndex = {19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1};
 	int tailIndex = 0;
 
 	bool isFalling = false;
@@ -298,57 +308,14 @@ namespace arrow
 	bool hasBeenShot = false;
 }
 
+void loadPathsFromFile();
+void savePathsToFile();
+void loadDeltaTimeFromFile();
+void saveDeltaTimeToFile();
+
 void initPath()
 {
-	dragon::path.points = {
-	{  0.0f, 1.0f, 0.0f },
-	{  0.5f, 1.0f, 0.0f },
-	{  0.5f, 1.0f, 0.5f },
-	{  0.5f, 1.0f, 1.0f },
-	{  0.5f, 1.0f, 1.5f },
-	{  0.5f, 1.0f, 2.0f },
-	{  0.0f, 1.0f, 2.0f },
-	{ -0.5f, 1.0f, 2.0f },
-	{ -0.5f, 1.0f, 1.5f },
-	{ -0.5f, 1.0f, 1.0f },
-	{  0.0f, 1.0f, 1.0f },
-	{  0.5f, 1.5f, 1.0f },
-	{  0.5f, 1.5f, 1.5f },
-	{  0.5f, 1.5f, 2.0f },
-	{  0.0f, 1.5f, 2.0f },
-	{ -0.5f, 1.5f, 2.0f },
-	{ -0.5f, 1.5f, 1.5f },
-	{ -0.5f, 1.5f, 1.0f },
-	{  0.0f, 1.5f, 1.0f },
-	{  0.5f, 2.0f, 1.0f },
-	{  0.5f, 2.0f, 1.5f },
-	{  0.5f, 2.0f, 2.0f },
-	{  0.0f, 2.0f, 2.0f },
-	{ -0.5f, 2.0f, 2.0f },
-	{ -0.5f, 2.0f, 1.5f },
-	{ -0.5f, 2.0f, 1.0f },
-	{  0.0f, 2.0f, 1.0f },
-	{  0.5f, 2.3f, 1.0f },
-	{  0.5f, 2.3f, 1.5f },
-	{  0.5f, 2.3f, 2.0f },
-	{  0.0f, 2.3f, 2.0f },
-	{ -0.5f, 2.3f, 2.0f },
-	{ -0.5f, 2.3f, 1.5f },
-	{ -0.5f, 2.3f, 1.0f },
-	{ -0.5f, 2.0f, 1.0f },
-	{ -0.5f, 2.0f, 1.0f },
-	{ -0.5f, 0.7f, 0.5f },
-	{ -0.5f, 1.8f, 0.0f },
-	{ -0.5f, 1.4f, -0.5f },
-	{ -0.5f, 2.2f, -1.0f },
-	{ -0.5f, 0.3f, -1.5f },
-	{ -0.5f, 1.0f, -2.0f },
-	{ -0.5f, 1.0f, -2.0f },
-	{  0.0f, 1.0f, -1.0f },
-	{  0.0f, 1.0f, 0.0f },
-	};
-
-	dragon::step = dragon::path.points.size() / (float)dragon::n;
+	dragon::step = dragon::spline.points.size() / (float)dragon::n;
 
 	dragon::normal = std::vector<glm::vec3>(dragon::n, glm::vec3(1.0f));
 	dragon::tangent = std::vector<glm::vec3>(dragon::n, glm::vec3(1.0f));
@@ -356,12 +323,12 @@ void initPath()
 
 	for (int i = 0; i < dragon::n - 1; i++)
 	{
-		dragon::tangent[i] = glm::normalize(dragon::path.GetSplinePoint(i * dragon::step + dragon::step, true) - dragon::path.GetSplinePoint(i * dragon::step, true));
+		dragon::tangent[i] = glm::normalize(dragon::spline.GetSplinePoint(i * dragon::step + dragon::step, true) - dragon::spline.GetSplinePoint(i * dragon::step, true));
 		//tangent[i] = glm::normalize(path.GetSplinePoint(i * step, true));
 		//std::cout << "i: " << i << " " << tangent[i].x << " " << tangent[i].y << " " << tangent[i].z << std::endl;
 	}
 
-	dragon::tangent[dragon::n - 1] = glm::normalize(dragon::path.GetSplinePoint((dragon::n - 1) * dragon::step, true));
+	dragon::tangent[dragon::n - 1] = glm::normalize(dragon::spline.GetSplinePoint((dragon::n - 1) * dragon::step, true));
 
 	//normal[0] = glm::normalize(glm::cross(tangent[0], glm::normalize(glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), tangent[0]))));
 	dragon::normal[0] = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -532,7 +499,7 @@ void drawTorch(glm::mat4 translationMatrix, float angle)
 void renderScene(GLFWwindow* window)
 {
 	///// SLEEP
-	Sleep(10);
+	Sleep(20);
 
 	glClearColor(0.4f, 0.4f, 0.8f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -552,13 +519,13 @@ void renderScene(GLFWwindow* window)
 	///// DRAGON
 
 	// positions
-	glm::vec3 headPosition = dragon::path.GetSplinePoint(dragon::headIndex * dragon::step, true);
+	glm::vec3 headPosition = dragon::spline.GetSplinePoint(dragon::headIndex * dragon::step, true);
 	std::vector<glm::vec3> bodyPosition = std::vector<glm::vec3>(19, glm::vec3());
 	for (int i = 0; i < bodyPosition.size(); i++)
 	{
-		bodyPosition[i] = dragon::path.GetSplinePoint(dragon::bodyIndex[i] * dragon::step, true);
+		bodyPosition[i] = dragon::spline.GetSplinePoint(dragon::bodyIndex[i] * dragon::step, true);
 	}
-	glm::vec3 tailPosition = dragon::path.GetSplinePoint(dragon::tailIndex * dragon::step, true);
+	glm::vec3 tailPosition = dragon::spline.GetSplinePoint(dragon::tailIndex * dragon::step, true);
 
 	// falling
 	if (dragon::isFalling)
@@ -597,12 +564,12 @@ void renderScene(GLFWwindow* window)
 	);
 
 	// drawing
-	if (!(dragon::hasBeenShot && !dragon::isFalling))
+	if (!dragon::isEditingPath && !(dragon::hasBeenShot && !dragon::isFalling))
 	{
 		drawObjectPBR(models::dragonSphere, glm::translate(headPosition) * headRotation * glm::scale(glm::vec3(1.0f)), glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, 0.0f);
 		for (int i = 0; i < bodyRotation.size(); i++)
 		{
-			drawObjectPBR(models::dragonCylinder, glm::translate(bodyPosition[i]) * bodyRotation[i] * glm::scale(glm::vec3(0.7f)), glm::vec3(0.5f, 0.1f, 0.7f), 0.0f, 0.0f);
+			drawObjectPBR(models::dragonCylinder, glm::translate(bodyPosition[i]) * bodyRotation[i] * glm::scale(glm::vec3(0.9f)), glm::vec3(0.5f, 0.1f, 0.7f), 0.0f, 0.0f);
 		}
 		drawObjectPBR(models::dragonCone, glm::translate(tailPosition) * tailRotation * glm::scale(glm::vec3(0.7f)), glm::vec3(0.5f, 0.1f, 0.7f), 0.0f, 0.0f);
 	}
@@ -759,7 +726,7 @@ void renderScene(GLFWwindow* window)
 	//	glm::translate(crossbowPos)* crossbowCameraRotrationMatrix* glm::eulerAngleY(glm::pi<float>())* glm::scale(glm::vec3(0.03f)),
 	//	crossbowColor, 0.2, 1.0);
 	drawObjectTexture(models::crossbowContext,
-		glm::translate(crossbowPos)* crossbowCameraRotrationMatrix* glm::eulerAngleY(glm::pi<float>())* glm::scale(glm::vec3(0.03f)),
+		glm::translate(crossbowPos) * crossbowCameraRotrationMatrix * glm::eulerAngleY(glm::pi<float>()) * glm::scale(glm::vec3(0.03f)),
 		crossbowTexture::albedo, crossbowTexture::normal, crossbowTexture::ambientOcclusion, crossbowTexture::roughness, crossbowTexture::metalness);
 
 	// update
@@ -816,6 +783,29 @@ void renderScene(GLFWwindow* window)
 		doorTexture::albedo, doorTexture::normal, doorTexture::ambientOcclusion, doorTexture::roughness, doorTexture::metalness);
 	drawObjectTexture(models::roomContext, glm::mat4(),
 		roomTexture::albedo, roomTexture::normal, roomTexture::ambientOcclusion, roomTexture::roughness, roomTexture::metalness);
+
+	// PATH EDITING
+	if (dragon::isEditingPath)
+	{
+		glm::vec3 point = glm::vec3(0.0f, 0.0f, 0.0f);
+		glm::vec3 color = glm::vec3(0.0f, 0.0f, 0.0f);
+		if (dragon::currentEditedPath == 1)
+		{
+			point = dragon::path1[dragon::editedPointIndex];
+			color = glm::vec3(1.0f, 0.0f, 0.0f);
+		}
+		else if (dragon::currentEditedPath == 2)
+		{
+			point = dragon::path2[dragon::editedPointIndex];
+			color = glm::vec3(0.0f, 1.0f, 0.0f);
+		}
+		else if (dragon::currentEditedPath == 3)
+		{
+			point = dragon::path3[dragon::editedPointIndex];
+			color = glm::vec3(0.0f, 0.0f, 1.0f);
+		}
+		drawObjectPBR(models::dragonSphere, glm::translate(point) * glm::scale(glm::vec3(0.5f)), color, 0.0f, 0.0f);
+	}
 
 	//test depth buffer
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -877,90 +867,102 @@ void init(GLFWwindow* window)
 	loadModelToContext("./models/arrow.obj", models::arrowContext);
 
 	// crossbow textures
-	crossbowTexture::albedo = Core::LoadTexture("textures/crossbow/albedo.jpg");
-	crossbowTexture::normal = Core::LoadTexture("textures/crossbow/normal.png");
-	crossbowTexture::ambientOcclusion = Core::LoadTexture("textures/crossbow/ambientOcclusion.png");
-	crossbowTexture::roughness = Core::LoadTexture("textures/crossbow/roughness.png");
-	crossbowTexture::metalness = Core::LoadTexture("textures/crossbow/metalness.png");
+	//crossbowTexture::albedo = Core::LoadTexture("textures/crossbow/albedo.jpg");
+	//crossbowTexture::normal = Core::LoadTexture("textures/crossbow/normal.png");
+	//crossbowTexture::ambientOcclusion = Core::LoadTexture("textures/crossbow/ambientOcclusion.png");
+	//crossbowTexture::roughness = Core::LoadTexture("textures/crossbow/roughness.png");
+	//crossbowTexture::metalness = Core::LoadTexture("textures/crossbow/metalness.png");
 
 	// destroyedColumn textures
-	destroyedColumnTexture::albedo = Core::LoadTexture("textures/destroyedColumn/albedo.jpg");
-	destroyedColumnTexture::normal = Core::LoadTexture("textures/destroyedColumn/normal.png");
-	destroyedColumnTexture::ambientOcclusion = Core::LoadTexture("textures/destroyedColumn/ambientOcclusion.png");
-	destroyedColumnTexture::roughness = Core::LoadTexture("textures/destroyedColumn/roughness.png");
-	destroyedColumnTexture::metalness = Core::LoadTexture("textures/destroyedColumn/roughness.png");
+	//destroyedColumnTexture::albedo = Core::LoadTexture("textures/destroyedColumn/albedo.jpg");
+	//destroyedColumnTexture::normal = Core::LoadTexture("textures/destroyedColumn/normal.png");
+	//destroyedColumnTexture::ambientOcclusion = Core::LoadTexture("textures/destroyedColumn/ambientOcclusion.png");
+	//destroyedColumnTexture::roughness = Core::LoadTexture("textures/destroyedColumn/roughness.png");
+	//destroyedColumnTexture::metalness = Core::LoadTexture("textures/destroyedColumn/roughness.png");
 
 	// column textures
-	columnTexture::albedo = Core::LoadTexture("textures/column/albedo.jpg");
-	columnTexture::normal = Core::LoadTexture("textures/column/normal.png");
-	columnTexture::ambientOcclusion = Core::LoadTexture("textures/column/ambientOcclusion.png");
-	columnTexture::roughness = Core::LoadTexture("textures/column/roughness.png");
-	columnTexture::metalness = Core::LoadTexture("textures/column/roughness.png");
+	//columnTexture::albedo = Core::LoadTexture("textures/column/albedo.jpg");
+	//columnTexture::normal = Core::LoadTexture("textures/column/normal.png");
+	//columnTexture::ambientOcclusion = Core::LoadTexture("textures/column/ambientOcclusion.png");
+	//columnTexture::roughness = Core::LoadTexture("textures/column/roughness.png");
+	//columnTexture::metalness = Core::LoadTexture("textures/column/roughness.png");
 
 	//torch textures
-	torchHandleTexture::albedo = Core::LoadTexture("textures/torchHandle/albedo.jpg");
-	torchHandleTexture::normal = Core::LoadTexture("textures/torchHandle/normal.png");
-	torchHandleTexture::ambientOcclusion = Core::LoadTexture("textures/torchHandle/ambientOcclusion.png");
-	torchHandleTexture::roughness = Core::LoadTexture("textures/torchHandle/roughness.png");
-	torchHandleTexture::metalness = Core::LoadTexture("textures/torchHandle/metalness.png");
+	//torchHandleTexture::albedo = Core::LoadTexture("textures/torchHandle/albedo.jpg");
+	//torchHandleTexture::normal = Core::LoadTexture("textures/torchHandle/normal.png");
+	//torchHandleTexture::ambientOcclusion = Core::LoadTexture("textures/torchHandle/ambientOcclusion.png");
+	//torchHandleTexture::roughness = Core::LoadTexture("textures/torchHandle/roughness.png");
+	//torchHandleTexture::metalness = Core::LoadTexture("textures/torchHandle/metalness.png");
 
-	torchTexture::albedo = Core::LoadTexture("textures/torch/albedo.jpg");
-	torchTexture::normal = Core::LoadTexture("textures/torch/normal.png");
-	torchTexture::ambientOcclusion = Core::LoadTexture("textures/torch/ambientOcclusion.png");
-	torchTexture::roughness = Core::LoadTexture("textures/torch/roughness.png");
-	torchTexture::metalness = Core::LoadTexture("textures/torch/metalness.png");
+	//torchTexture::albedo = Core::LoadTexture("textures/torch/albedo.jpg");
+	//torchTexture::normal = Core::LoadTexture("textures/torch/normal.png");
+	//torchTexture::ambientOcclusion = Core::LoadTexture("textures/torch/ambientOcclusion.png");
+	//torchTexture::roughness = Core::LoadTexture("textures/torch/roughness.png");
+	//torchTexture::metalness = Core::LoadTexture("textures/torch/metalness.png");
 
-	torchRingsTexture::albedo = Core::LoadTexture("textures/torchRings/albedo.jpg");
-	torchRingsTexture::normal = Core::LoadTexture("textures/torchRings/normal.png");
-	torchRingsTexture::ambientOcclusion = Core::LoadTexture("textures/torchRings/ambientOcclusion.png");
-	torchRingsTexture::roughness = Core::LoadTexture("textures/torchRings/roughness.png");
-	torchRingsTexture::metalness = Core::LoadTexture("textures/torchRings/metalness.png");
+	//torchRingsTexture::albedo = Core::LoadTexture("textures/torchRings/albedo.jpg");
+	//torchRingsTexture::normal = Core::LoadTexture("textures/torchRings/normal.png");
+	//torchRingsTexture::ambientOcclusion = Core::LoadTexture("textures/torchRings/ambientOcclusion.png");
+	//torchRingsTexture::roughness = Core::LoadTexture("textures/torchRings/roughness.png");
+	//torchRingsTexture::metalness = Core::LoadTexture("textures/torchRings/metalness.png");
 
 	//room textures darkened USE albedoOriginal.jpg TO GET BRIGHT TEXTURE
-	roomTexture::albedo = Core::LoadTexture("textures/room/albedo.jpg");
-	//roomTexture::albedo = Core::LoadTexture("textures/room/albedoOriginal.jpg");
-	roomTexture::normal = Core::LoadTexture("textures/room/normal.png");
-	roomTexture::ambientOcclusion = Core::LoadTexture("textures/room/ambientOcclusion.png");
-	roomTexture::roughness = Core::LoadTexture("textures/room/roughness.png");
-	roomTexture::metalness = Core::LoadTexture("textures/room/metalness.png");
+	//roomTexture::albedo = Core::LoadTexture("textures/room/albedo.jpg");
+	roomTexture::albedo = Core::LoadTexture("textures/room/albedoOriginal.jpg");
+	//roomTexture::normal = Core::LoadTexture("textures/room/normal.png");
+	//roomTexture::ambientOcclusion = Core::LoadTexture("textures/room/ambientOcclusion.png");
+	//roomTexture::roughness = Core::LoadTexture("textures/room/roughness.png");
+	//roomTexture::metalness = Core::LoadTexture("textures/room/metalness.png");
 
 
 	//there wasn't any ambientOcclusion for lamp
-	lampTexture::albedo = Core::LoadTexture("textures/lamp/albedo.jpg");
-	lampTexture::normal = Core::LoadTexture("textures/lamp/normal.png");
+	//lampTexture::albedo = Core::LoadTexture("textures/lamp/albedo.jpg");
+	//lampTexture::normal = Core::LoadTexture("textures/lamp/normal.png");
 	//lampTexture::ambientOcclusion = Core::LoadTexture("textures/lamp/ambientOcclusion.png");
-	lampTexture::roughness = Core::LoadTexture("textures/lamp/metalness.png");
-	lampTexture::metalness = Core::LoadTexture("textures/lamp/metalness.png");
+	//lampTexture::roughness = Core::LoadTexture("textures/lamp/metalness.png");
+	//lampTexture::metalness = Core::LoadTexture("textures/lamp/metalness.png");
 
 	//light switch textures
-	lightSwitchTexture::albedo = Core::LoadTexture("textures/lightSwitch/albedo.jpg");
-	lightSwitchTexture::normal = Core::LoadTexture("textures/lightSwitch/normal.png");
-	lightSwitchTexture::ambientOcclusion = Core::LoadTexture("textures/lightSwitch/ambientOcclusion.png");
-	lightSwitchTexture::roughness = Core::LoadTexture("textures/lightSwitch/roughness.png");
-	lightSwitchTexture::metalness = Core::LoadTexture("textures/lightSwitch/metalness.png");
+	//lightSwitchTexture::albedo = Core::LoadTexture("textures/lightSwitch/albedo.jpg");
+	//lightSwitchTexture::normal = Core::LoadTexture("textures/lightSwitch/normal.png");
+	//lightSwitchTexture::ambientOcclusion = Core::LoadTexture("textures/lightSwitch/ambientOcclusion.png");
+	//lightSwitchTexture::roughness = Core::LoadTexture("textures/lightSwitch/roughness.png");
+	//lightSwitchTexture::metalness = Core::LoadTexture("textures/lightSwitch/metalness.png");
 
 
 	//there wasn't any ambientOcclusion for arrow
-	arrowTexture::albedo = Core::LoadTexture("textures/arrow/albedo.jpg");
-	arrowTexture::normal = Core::LoadTexture("textures/arrow/normal.png");
+	//arrowTexture::albedo = Core::LoadTexture("textures/arrow/albedo.jpg");
+	//arrowTexture::normal = Core::LoadTexture("textures/arrow/normal.png");
 	//arrowTexture::ambientOcclusion = Core::LoadTexture("textures/arrow/ambientOcclusion.png");
-	arrowTexture::roughness = Core::LoadTexture("textures/arrow/roughness.png");
-	arrowTexture::metalness = Core::LoadTexture("textures/arrow/metalness.png");
+	//arrowTexture::roughness = Core::LoadTexture("textures/arrow/roughness.png");
+	//arrowTexture::metalness = Core::LoadTexture("textures/arrow/metalness.png");
 
 	//door textures
-	doorTexture::albedo = Core::LoadTexture("textures/door/albedo.jpg");
-	doorTexture::normal = Core::LoadTexture("textures/door/normal.png");
-	doorTexture::ambientOcclusion = Core::LoadTexture("textures/door/ambientOcclusion.png");
-	doorTexture::roughness = Core::LoadTexture("textures/door/roughness.png");
-	doorTexture::metalness = Core::LoadTexture("textures/door/metalness.png");
+	//doorTexture::albedo = Core::LoadTexture("textures/door/albedo.jpg");
+	//doorTexture::normal = Core::LoadTexture("textures/door/normal.png");
+	//doorTexture::ambientOcclusion = Core::LoadTexture("textures/door/ambientOcclusion.png");
+	//doorTexture::roughness = Core::LoadTexture("textures/door/roughness.png");
+	//doorTexture::metalness = Core::LoadTexture("textures/door/metalness.png");
 
-	// other
+	// path
+	loadPathsFromFile();
+	loadDeltaTimeFromFile();
+	dragon::currentPath = int(deltaTime * 100000) % 3 + 1;
+	if (dragon::currentPath == 1)
+		dragon::spline.points = dragon::path1;
+	else if (dragon::currentPath == 2)
+		dragon::spline.points = dragon::path2;
+	else if (dragon::currentPath == 3)
+		dragon::spline.points = dragon::path3;
 	initPath();
 }
 
 void shutdown(GLFWwindow* window)
 {
 	shaderLoader.DeleteProgram(program);
+
+	savePathsToFile();
+	saveDeltaTimeToFile();
 }
 
 //obsluga wejscia
@@ -970,24 +972,59 @@ void processInput(GLFWwindow* window)
 	glm::vec3 crossbowUp = glm::vec3(0.f, 1.f, 0.f);
 	float angleSpeed = 0.05f * deltaTime * 60;
 	float moveSpeed = 0.05f * deltaTime * 60;
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, true);
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		crossbowPos += crossbowDir * moveSpeed;
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		crossbowPos -= crossbowDir * moveSpeed;
-	if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
-		crossbowPos += crossbowSide * moveSpeed;
-	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
-		crossbowPos -= crossbowSide * moveSpeed;
-	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-		crossbowPos += crossbowUp * moveSpeed;
-	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
-		crossbowPos -= crossbowUp * moveSpeed;
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		crossbowDir = glm::vec3(glm::eulerAngleY(angleSpeed) * glm::vec4(crossbowDir, 0));
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		crossbowDir = glm::vec3(glm::eulerAngleY(-angleSpeed) * glm::vec4(crossbowDir, 0));
+
+	if (dragon::isEditingPath)
+	{
+		float change = 0.5f;
+		glm::vec3 point = glm::vec3(0.0f);
+		if (dragon::currentEditedPath == 1)
+			point = dragon::path1[dragon::editedPointIndex];
+		else if (dragon::currentEditedPath == 2)
+			point = dragon::path2[dragon::editedPointIndex];
+		else if (dragon::currentEditedPath == 3)
+			point = dragon::path3[dragon::editedPointIndex];
+
+		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+			point.z += change;
+		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+			point.z -= change;
+		if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+			point.y += change;
+		if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+			point.y -= change;
+		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+			point.x += change;
+		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+			point.x -= change;
+
+		if (dragon::currentEditedPath == 1)
+			dragon::path1[dragon::editedPointIndex] = point;
+		else if (dragon::currentEditedPath == 2)
+			dragon::path2[dragon::editedPointIndex] = point;
+		else if (dragon::currentEditedPath == 3)
+			dragon::path3[dragon::editedPointIndex] = point;
+	}
+	else
+	{
+		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+			glfwSetWindowShouldClose(window, true);
+		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+			crossbowPos += crossbowDir * moveSpeed;
+		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+			crossbowPos -= crossbowDir * moveSpeed;
+		if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
+			crossbowPos += crossbowSide * moveSpeed;
+		if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
+			crossbowPos -= crossbowSide * moveSpeed;
+		if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+			crossbowPos += crossbowUp * moveSpeed;
+		if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+			crossbowPos -= crossbowUp * moveSpeed;
+		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+			crossbowDir = glm::vec3(glm::eulerAngleY(angleSpeed) * glm::vec4(crossbowDir, 0));
+		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+			crossbowDir = glm::vec3(glm::eulerAngleY(-angleSpeed) * glm::vec4(crossbowDir, 0));
+	}
 
 	cameraPos = crossbowPos - 0.5 * crossbowDir + glm::vec3(0, 1, 0) * 0.2f;
 	cameraDir = crossbowDir;
@@ -1001,8 +1038,9 @@ void processInput(GLFWwindow* window)
 	{
 		printf("crossbowPos = glm::vec3(%ff, %ff, %ff);\n", crossbowPos.x, crossbowPos.y, crossbowPos.z);
 		printf("crossbowDir = glm::vec3(%ff, %ff, %ff);\n", crossbowDir.x, crossbowDir.y, crossbowDir.z);
-		printf("arrow::position = glm::vec3(%ff, %ff, %ff);\n", arrow::position.x, arrow::position.y, arrow::position.z);
-		printf("arrow::direction = glm::vec3(%ff, %ff, %ff);\n", arrow::direction.x, arrow::direction.y, arrow::direction.z);
+		printf("dragon::isEditingPath = %s);\n", dragon::isEditingPath ? "true" : "false");
+		printf("dragon::currentEditedPath = %i);\n", dragon::currentEditedPath);
+		printf("dragon::editedPointIndex = %i);\n", dragon::editedPointIndex);
 	}
 
 	//cameraDir = glm::normalize(-cameraPos);
@@ -1019,6 +1057,59 @@ void processInput(GLFWwindow* window)
 			arrow::direction = crossbowDir;
 		}
 	}
+
+	// PATH EDITING
+	if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
+	{
+		if (dragon::isEditingPath)
+		{
+			dragon::currentPath = dragon::currentEditedPath;
+			if (dragon::currentPath == 1)
+				dragon::spline.points = dragon::path1;
+			else if (dragon::currentPath == 2)
+				dragon::spline.points = dragon::path2;
+			else if (dragon::currentPath == 3)
+				dragon::spline.points = dragon::path3;
+			initPath();
+			savePathsToFile();
+			dragon::isEditingPath = false;
+		}
+		else
+		{
+			dragon::currentEditedPath = dragon::currentPath;
+			dragon::isEditingPath = true;
+		}
+	}
+	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
+	{
+		if (dragon::isEditingPath)
+		{
+			if (dragon::currentEditedPath == 1)
+				dragon::currentEditedPath = 2;
+			else if (dragon::currentEditedPath == 2)
+				dragon::currentEditedPath = 3;
+			else if (dragon::currentEditedPath == 3)
+				dragon::currentEditedPath = 1;
+		}
+	}
+	if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
+	{
+		if (dragon::isEditingPath)
+		{
+			dragon::editedPointIndex--;
+			if (dragon::editedPointIndex == -1)
+				dragon::editedPointIndex = 49;
+		}
+	}
+	if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
+	{
+		if (dragon::isEditingPath)
+		{
+			dragon::editedPointIndex++;
+			if (dragon::editedPointIndex == 50)
+				dragon::editedPointIndex = 0;
+		}
+	}
 }
 
 // funkcja jest glowna petla
@@ -1030,4 +1121,93 @@ void renderLoop(GLFWwindow* window) {
 		renderScene(window);
 		glfwPollEvents();
 	}
+}
+
+void loadPathsFromFile()
+{
+	std::ifstream path1("src/path1.txt");
+	std::ifstream path2("src/path2.txt");
+	std::ifstream path3("src/path3.txt");
+
+	std::string text;
+
+	for (int i = 0; i < 50; i++)
+	{
+		std::getline(path1, text);
+		float x1 = std::stof(text);
+		std::getline(path1, text);
+		float y1 = std::stof(text);
+		std::getline(path1, text);
+		float z1 = std::stof(text);
+
+		std::getline(path2, text);
+		float x2 = std::stof(text);
+		std::getline(path2, text);
+		float y2 = std::stof(text);
+		std::getline(path2, text);
+		float z2 = std::stof(text);
+
+		std::getline(path3, text);
+		float x3 = std::stof(text);
+		std::getline(path3, text);
+		float y3 = std::stof(text);
+		std::getline(path3, text);
+		float z3 = std::stof(text);
+
+		dragon::path1[i] = glm::vec3(x1, y1, z1);
+		dragon::path2[i] = glm::vec3(x2, y2, z2);
+		dragon::path3[i] = glm::vec3(x3, y3, z3);
+	}
+
+	path1.close();
+	path2.close();
+	path3.close();
+}
+
+void savePathsToFile()
+{
+	std::ofstream path1("src/path1.txt");
+	std::ofstream path2("src/path2.txt");
+	std::ofstream path3("src/path3.txt");
+
+	for (int i = 0; i < 50; i++)
+	{
+		std::string x1 = std::to_string(dragon::path1[i].x);
+		std::string y1 = std::to_string(dragon::path1[i].y);
+		std::string z1 = std::to_string(dragon::path1[i].z);
+
+		std::string x2 = std::to_string(dragon::path2[i].x);
+		std::string y2 = std::to_string(dragon::path2[i].y);
+		std::string z2 = std::to_string(dragon::path2[i].z);
+
+		std::string x3 = std::to_string(dragon::path3[i].x);
+		std::string y3 = std::to_string(dragon::path3[i].y);
+		std::string z3 = std::to_string(dragon::path3[i].z);
+
+		path1 << x1 << std::endl << y1 << std::endl << z1 << std::endl;
+		path2 << x2 << std::endl << y2 << std::endl << z2 << std::endl;
+		path3 << x3 << std::endl << y3 << std::endl << z3 << std::endl;
+	}
+
+	path1.close();
+	path2.close();
+	path3.close();
+}
+
+
+void loadDeltaTimeFromFile()
+{
+	std::ifstream file("src/deltaTime.txt");
+	std::string text;
+	std::getline(file, text);
+	deltaTime = std::stof(text);
+	file.close();
+}
+
+void saveDeltaTimeToFile()
+{
+	std::ofstream file("src/deltaTime.txt");
+	std::string text = std::to_string(deltaTime);
+	file << text;
+	file.close();
 }

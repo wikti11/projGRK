@@ -1,29 +1,29 @@
 ﻿  main.cpp
 C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\minwindef.h(130,1): warning C4005: 'APIENTRY': macro redefinition
 C:\Users\marci\Desktop\grk\grk\dependencies\glfw-3.3.8.bin.WIN32\include\GLFW\glfw3.h(123): message : see previous definition of 'APIENTRY'
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(175,30): warning C4305: 'initializing': truncation from 'double' to 'float'
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(403,38): warning C4305: '=': truncation from 'double' to 'float'
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(427,16): warning C4305: 'initializing': truncation from 'double' to 'float'
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(505,13): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(539,13): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(545,108): warning C4305: 'argument': truncation from 'double' to 'T'
+C:\dev\projGRK\cw 9\src\ex_9_1.hpp(178,30): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\dev\projGRK\cw 9\src\ex_9_1.hpp(370,38): warning C4305: '=': truncation from 'double' to 'float'
+C:\dev\projGRK\cw 9\src\ex_9_1.hpp(394,16): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\dev\projGRK\cw 9\src\ex_9_1.hpp(472,13): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\dev\projGRK\cw 9\src\ex_9_1.hpp(506,13): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\dev\projGRK\cw 9\src\ex_9_1.hpp(512,108): warning C4305: 'argument': truncation from 'double' to 'T'
           with
           [
               T=float
           ]
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(557,20): warning C4018: '<': signed/unsigned mismatch
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(583,20): warning C4018: '<': signed/unsigned mismatch
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(603,21): warning C4018: '<': signed/unsigned mismatch
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(614,21): warning C4018: '<': signed/unsigned mismatch
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(652,21): warning C4018: '<': signed/unsigned mismatch
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(677,21): warning C4018: '<': signed/unsigned mismatch
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(696,21): warning C4018: '<': signed/unsigned mismatch
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(772,20): warning C4018: '<': signed/unsigned mismatch
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(790,20): warning C4018: '<': signed/unsigned mismatch
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(799,20): warning C4018: '<': signed/unsigned mismatch
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(806,20): warning C4018: '<': signed/unsigned mismatch
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(996,21): warning C4305: '-=': truncation from 'double' to 'float'
-C:\dev\projGRK\cw 9\src\ex_9_1.hpp(998,21): warning C4305: '+=': truncation from 'double' to 'float'
+C:\dev\projGRK\cw 9\src\ex_9_1.hpp(524,20): warning C4018: '<': signed/unsigned mismatch
+C:\dev\projGRK\cw 9\src\ex_9_1.hpp(550,20): warning C4018: '<': signed/unsigned mismatch
+C:\dev\projGRK\cw 9\src\ex_9_1.hpp(570,21): warning C4018: '<': signed/unsigned mismatch
+C:\dev\projGRK\cw 9\src\ex_9_1.hpp(581,21): warning C4018: '<': signed/unsigned mismatch
+C:\dev\projGRK\cw 9\src\ex_9_1.hpp(619,21): warning C4018: '<': signed/unsigned mismatch
+C:\dev\projGRK\cw 9\src\ex_9_1.hpp(644,21): warning C4018: '<': signed/unsigned mismatch
+C:\dev\projGRK\cw 9\src\ex_9_1.hpp(663,21): warning C4018: '<': signed/unsigned mismatch
+C:\dev\projGRK\cw 9\src\ex_9_1.hpp(739,20): warning C4018: '<': signed/unsigned mismatch
+C:\dev\projGRK\cw 9\src\ex_9_1.hpp(757,20): warning C4018: '<': signed/unsigned mismatch
+C:\dev\projGRK\cw 9\src\ex_9_1.hpp(766,20): warning C4018: '<': signed/unsigned mismatch
+C:\dev\projGRK\cw 9\src\ex_9_1.hpp(773,20): warning C4018: '<': signed/unsigned mismatch
+C:\dev\projGRK\cw 9\src\ex_9_1.hpp(1033,21): warning C4305: '-=': truncation from 'double' to 'float'
+C:\dev\projGRK\cw 9\src\ex_9_1.hpp(1035,21): warning C4305: '+=': truncation from 'double' to 'float'
 Box.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/INCREMENTAL:NO' specification
 LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
   grk-cw9.vcxproj -> C:\Users\marci\Desktop\grk\grk\Debug\grk-cw9.exe

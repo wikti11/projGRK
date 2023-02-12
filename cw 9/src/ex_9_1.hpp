@@ -323,7 +323,8 @@ void initPath()
 
 	for (int i = 0; i < dragon::n - 1; i++)
 	{
-		dragon::tangent[i] = glm::normalize(dragon::spline.GetSplinePoint(i * dragon::step + dragon::step, true) - dragon::spline.GetSplinePoint(i * dragon::step, true));
+		//dragon::tangent[i] = glm::normalize(dragon::spline.GetSplinePoint(i * dragon::step + dragon::step, true) - dragon::spline.GetSplinePoint(i * dragon::step, true));
+		dragon::tangent[i] = glm::normalize(dragon::spline.GetSplineGradient(i * dragon::step + dragon::step, true));
 		//tangent[i] = glm::normalize(path.GetSplinePoint(i * step, true));
 		//std::cout << "i: " << i << " " << tangent[i].x << " " << tangent[i].y << " " << tangent[i].z << std::endl;
 	}
@@ -357,6 +358,24 @@ void initPath()
 
 		dragon::bitangent[i] = glm::normalize(glm::cross(dragon::normal[i], dragon::tangent[i]));
 	}
+}
+
+glm::mat4 gram_schmidt_orthonormalization(glm::mat4 vMatrix)
+{
+	vMatrix = glm::transpose(vMatrix);
+	glm::mat4 uMatrix = glm::mat4(0.0f);
+	uMatrix[0] = glm::normalize(vMatrix[0]);
+	for (int i = 1; i < 4; i++)
+	{
+		uMatrix[i] = vMatrix[i];
+		for (int j = 0; j < i; j++)
+		{
+			uMatrix[i] = uMatrix[i] - glm::dot(uMatrix[j], uMatrix[i]) * uMatrix[j];
+		}
+		uMatrix[i] = glm::normalize(uMatrix[i]);
+	}
+	uMatrix = glm::transpose(uMatrix);
+	return uMatrix;
 }
 
 void updateDeltaTime(float time)
@@ -546,6 +565,7 @@ void renderScene(GLFWwindow* window)
 		glm::vec4(dragon::tangent[dragon::headIndex], 0),
 		glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)
 	);
+	headRotation = gram_schmidt_orthonormalization(headRotation);
 	std::vector<glm::mat4> bodyRotation = std::vector<glm::mat4>(19, glm::mat4());
 	for (int i = 0; i < bodyRotation.size(); i++)
 	{
@@ -555,6 +575,7 @@ void renderScene(GLFWwindow* window)
 			glm::vec4(dragon::tangent[dragon::bodyIndex[i]], 0),
 			glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)
 		);
+		bodyRotation[i] = gram_schmidt_orthonormalization(bodyRotation[i]);
 	}
 	glm::mat4 tailRotation = glm::mat4(
 		glm::vec4(dragon::bitangent[dragon::tailIndex], 0),
@@ -562,6 +583,7 @@ void renderScene(GLFWwindow* window)
 		glm::vec4(dragon::tangent[dragon::tailIndex], 0),
 		glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)
 	);
+	tailRotation = gram_schmidt_orthonormalization(tailRotation);
 
 	// drawing
 	if (!dragon::isEditingPath && !(dragon::hasBeenShot && !dragon::isFalling))

@@ -992,82 +992,82 @@ void init(GLFWwindow* window)
 	loadModelToContext("./models/fire.obj", models::fireContext);
 
 	// crossbow textures
-	//crossbowTexture::albedo = Core::LoadTexture("textures/crossbow/albedo.jpg");
-	//crossbowTexture::normal = Core::LoadTexture("textures/crossbow/normal.png");
-	//crossbowTexture::ambientOcclusion = Core::LoadTexture("textures/crossbow/ambientOcclusion.png");
-	//crossbowTexture::roughness = Core::LoadTexture("textures/crossbow/roughness.png");
-	//crossbowTexture::metalness = Core::LoadTexture("textures/crossbow/metalness.png");
+	crossbowTexture::albedo = Core::LoadTexture("textures/crossbow/albedo.jpg");
+	crossbowTexture::normal = Core::LoadTexture("textures/crossbow/normal.png");
+	crossbowTexture::ambientOcclusion = Core::LoadTexture("textures/crossbow/ambientOcclusion.png");
+	crossbowTexture::roughness = Core::LoadTexture("textures/crossbow/roughness.png");
+	crossbowTexture::metalness = Core::LoadTexture("textures/crossbow/metalness.png");
 
 	// destroyedColumn textures
-	//destroyedColumnTexture::albedo = Core::LoadTexture("textures/destroyedColumn/albedo.jpg");
-	//destroyedColumnTexture::normal = Core::LoadTexture("textures/destroyedColumn/normal.png");
-	//destroyedColumnTexture::ambientOcclusion = Core::LoadTexture("textures/destroyedColumn/ambientOcclusion.png");
-	//destroyedColumnTexture::roughness = Core::LoadTexture("textures/destroyedColumn/roughness.png");
-	//destroyedColumnTexture::metalness = Core::LoadTexture("textures/destroyedColumn/roughness.png");
+	destroyedColumnTexture::albedo = Core::LoadTexture("textures/destroyedColumn/albedo.jpg");
+	destroyedColumnTexture::normal = Core::LoadTexture("textures/destroyedColumn/normal.png");
+	destroyedColumnTexture::ambientOcclusion = Core::LoadTexture("textures/destroyedColumn/ambientOcclusion.png");
+	destroyedColumnTexture::roughness = Core::LoadTexture("textures/destroyedColumn/roughness.png");
+	destroyedColumnTexture::metalness = Core::LoadTexture("textures/destroyedColumn/roughness.png");
 
 	// column textures
-	//columnTexture::albedo = Core::LoadTexture("textures/column/albedo.jpg");
-	//columnTexture::normal = Core::LoadTexture("textures/column/normal.png");
-	//columnTexture::ambientOcclusion = Core::LoadTexture("textures/column/ambientOcclusion.png");
-	//columnTexture::roughness = Core::LoadTexture("textures/column/roughness.png");
-	//columnTexture::metalness = Core::LoadTexture("textures/column/roughness.png");
+	columnTexture::albedo = Core::LoadTexture("textures/column/albedo.jpg");
+	columnTexture::normal = Core::LoadTexture("textures/column/normal.png");
+	columnTexture::ambientOcclusion = Core::LoadTexture("textures/column/ambientOcclusion.png");
+	columnTexture::roughness = Core::LoadTexture("textures/column/roughness.png");
+	columnTexture::metalness = Core::LoadTexture("textures/column/roughness.png");
 
-	//torch textures
-	//torchHandleTexture::albedo = Core::LoadTexture("textures/torchHandle/albedo.jpg");
-	//torchHandleTexture::normal = Core::LoadTexture("textures/torchHandle/normal.png");
-	//torchHandleTexture::ambientOcclusion = Core::LoadTexture("textures/torchHandle/ambientOcclusion.png");
-	//torchHandleTexture::roughness = Core::LoadTexture("textures/torchHandle/roughness.png");
-	//torchHandleTexture::metalness = Core::LoadTexture("textures/torchHandle/metalness.png");
+	// torch textures
+	torchHandleTexture::albedo = Core::LoadTexture("textures/torchHandle/albedo.jpg");
+	torchHandleTexture::normal = Core::LoadTexture("textures/torchHandle/normal.png");
+	torchHandleTexture::ambientOcclusion = Core::LoadTexture("textures/torchHandle/ambientOcclusion.png");
+	torchHandleTexture::roughness = Core::LoadTexture("textures/torchHandle/roughness.png");
+	torchHandleTexture::metalness = Core::LoadTexture("textures/torchHandle/metalness.png");
 
-	//torchTexture::albedo = Core::LoadTexture("textures/torch/albedo.jpg");
-	//torchTexture::normal = Core::LoadTexture("textures/torch/normal.png");
-	//torchTexture::ambientOcclusion = Core::LoadTexture("textures/torch/ambientOcclusion.png");
-	//torchTexture::roughness = Core::LoadTexture("textures/torch/roughness.png");
-	//torchTexture::metalness = Core::LoadTexture("textures/torch/metalness.png");
+	torchTexture::albedo = Core::LoadTexture("textures/torch/albedo.jpg");
+	torchTexture::normal = Core::LoadTexture("textures/torch/normal.png");
+	torchTexture::ambientOcclusion = Core::LoadTexture("textures/torch/ambientOcclusion.png");
+	torchTexture::roughness = Core::LoadTexture("textures/torch/roughness.png");
+	torchTexture::metalness = Core::LoadTexture("textures/torch/metalness.png");
 
-	//torchRingsTexture::albedo = Core::LoadTexture("textures/torchRings/albedo.jpg");
-	//torchRingsTexture::normal = Core::LoadTexture("textures/torchRings/normal.png");
-	//torchRingsTexture::ambientOcclusion = Core::LoadTexture("textures/torchRings/ambientOcclusion.png");
-	//torchRingsTexture::roughness = Core::LoadTexture("textures/torchRings/roughness.png");
-	//torchRingsTexture::metalness = Core::LoadTexture("textures/torchRings/metalness.png");
+	torchRingsTexture::albedo = Core::LoadTexture("textures/torchRings/albedo.jpg");
+	torchRingsTexture::normal = Core::LoadTexture("textures/torchRings/normal.png");
+	torchRingsTexture::ambientOcclusion = Core::LoadTexture("textures/torchRings/ambientOcclusion.png");
+	torchRingsTexture::roughness = Core::LoadTexture("textures/torchRings/roughness.png");
+	torchRingsTexture::metalness = Core::LoadTexture("textures/torchRings/metalness.png");
 
 	//room textures darkened USE albedoOriginal.jpg TO GET BRIGHT TEXTURE
-	//roomTexture::albedo = Core::LoadTexture("textures/room/albedo.jpg");
-	roomTexture::albedo = Core::LoadTexture("textures/room/albedoOriginal.jpg");
-	//roomTexture::normal = Core::LoadTexture("textures/room/normal.png");
-	//roomTexture::ambientOcclusion = Core::LoadTexture("textures/room/ambientOcclusion.png");
-	//roomTexture::roughness = Core::LoadTexture("textures/room/roughness.png");
-	//roomTexture::metalness = Core::LoadTexture("textures/room/metalness.png");
+	roomTexture::albedo = Core::LoadTexture("textures/room/albedo.jpg");
+	//roomTexture::albedo = Core::LoadTexture("textures/room/albedoOriginal.jpg");
+	roomTexture::normal = Core::LoadTexture("textures/room/normal.png");
+	roomTexture::ambientOcclusion = Core::LoadTexture("textures/room/ambientOcclusion.png");
+	roomTexture::roughness = Core::LoadTexture("textures/room/roughness.png");
+	roomTexture::metalness = Core::LoadTexture("textures/room/metalness.png");
 
 
 	//there wasn't any ambientOcclusion for lamp
-	//lampTexture::albedo = Core::LoadTexture("textures/lamp/albedo.jpg");
-	//lampTexture::normal = Core::LoadTexture("textures/lamp/normal.png");
-	//lampTexture::ambientOcclusion = Core::LoadTexture("textures/lamp/ambientOcclusion.png");
-	//lampTexture::roughness = Core::LoadTexture("textures/lamp/metalness.png");
-	//lampTexture::metalness = Core::LoadTexture("textures/lamp/metalness.png");
+	lampTexture::albedo = Core::LoadTexture("textures/lamp/albedo.jpg");
+	lampTexture::normal = Core::LoadTexture("textures/lamp/normal.png");
+	lampTexture::ambientOcclusion = Core::LoadTexture("textures/lamp/ambientOcclusion.png");
+	lampTexture::roughness = Core::LoadTexture("textures/lamp/metalness.png");
+	lampTexture::metalness = Core::LoadTexture("textures/lamp/metalness.png");
 
 	//light switch textures
-	//lightSwitchTexture::albedo = Core::LoadTexture("textures/lightSwitch/albedo.jpg");
-	//lightSwitchTexture::normal = Core::LoadTexture("textures/lightSwitch/normal.png");
-	//lightSwitchTexture::ambientOcclusion = Core::LoadTexture("textures/lightSwitch/ambientOcclusion.png");
-	//lightSwitchTexture::roughness = Core::LoadTexture("textures/lightSwitch/roughness.png");
-	//lightSwitchTexture::metalness = Core::LoadTexture("textures/lightSwitch/metalness.png");
+	lightSwitchTexture::albedo = Core::LoadTexture("textures/lightSwitch/albedo.jpg");
+	lightSwitchTexture::normal = Core::LoadTexture("textures/lightSwitch/normal.png");
+	lightSwitchTexture::ambientOcclusion = Core::LoadTexture("textures/lightSwitch/ambientOcclusion.png");
+	lightSwitchTexture::roughness = Core::LoadTexture("textures/lightSwitch/roughness.png");
+	lightSwitchTexture::metalness = Core::LoadTexture("textures/lightSwitch/metalness.png");
 
 
 	//there wasn't any ambientOcclusion for arrow
-	//arrowTexture::albedo = Core::LoadTexture("textures/arrow/albedo.jpg");
-	//arrowTexture::normal = Core::LoadTexture("textures/arrow/normal.png");
-	//arrowTexture::ambientOcclusion = Core::LoadTexture("textures/arrow/ambientOcclusion.png");
-	//arrowTexture::roughness = Core::LoadTexture("textures/arrow/roughness.png");
-	//arrowTexture::metalness = Core::LoadTexture("textures/arrow/metalness.png");
+	arrowTexture::albedo = Core::LoadTexture("textures/arrow/albedo.jpg");
+	arrowTexture::normal = Core::LoadTexture("textures/arrow/normal.png");
+	arrowTexture::ambientOcclusion = Core::LoadTexture("textures/arrow/ambientOcclusion.png");
+	arrowTexture::roughness = Core::LoadTexture("textures/arrow/roughness.png");
+	arrowTexture::metalness = Core::LoadTexture("textures/arrow/metalness.png");
 
 	//door textures
-	//doorTexture::albedo = Core::LoadTexture("textures/door/albedo.jpg");
-	//doorTexture::normal = Core::LoadTexture("textures/door/normal.png");
-	//doorTexture::ambientOcclusion = Core::LoadTexture("textures/door/ambientOcclusion.png");
-	//doorTexture::roughness = Core::LoadTexture("textures/door/roughness.png");
-	//doorTexture::metalness = Core::LoadTexture("textures/door/metalness.png");
+	doorTexture::albedo = Core::LoadTexture("textures/door/albedo.jpg");
+	doorTexture::normal = Core::LoadTexture("textures/door/normal.png");
+	doorTexture::ambientOcclusion = Core::LoadTexture("textures/door/ambientOcclusion.png");
+	doorTexture::roughness = Core::LoadTexture("textures/door/roughness.png");
+	doorTexture::metalness = Core::LoadTexture("textures/door/metalness.png");
 
 	// path
 	loadPathsFromFile();

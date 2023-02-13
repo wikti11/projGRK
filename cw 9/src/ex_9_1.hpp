@@ -39,6 +39,7 @@ namespace models
 	Core::RenderContext arrowContext;
 	Core::RenderContext crossbowContext;
 	Core::RenderContext sphereContext;
+	Core::RenderContext fireContext;
 }
 
 namespace crossbowTexture
@@ -235,13 +236,22 @@ std::vector<float> switchAngle = {
 	90.0f,
 };
 
+std::vector<glm::vec3> firePosition = {
+	{ -9.07197f, 3.519f, 8.13489f },
+	{-9.07197f, 3.519f, -8.03489f },
+	{ 0.07f, 3.519f, 9.41309f },
+	{ 0.07f, 3.519f, -9.4318f },
+	{ 9.7736f, 3.519f, 8.15489f },
+	{ 9.7736f, 3.519f, -8.03489f },
+};
+
 std::vector<glm::vec3> lightPositions = {
-	torchPosition[0],
-	torchPosition[1],
-	torchPosition[2],
-	torchPosition[3],
-	torchPosition[4],
-	torchPosition[5],
+	firePosition[0],
+	firePosition[1],
+	firePosition[2],
+	firePosition[3],
+	firePosition[4],
+	firePosition[5],
 	lampPosition[0],
 	lampPosition[1],
 	lampPosition[2],
@@ -262,6 +272,89 @@ std::vector<glm::vec3> lightColors = {
 	lightColor,
 	lightColor,
 };
+
+// particles
+
+struct Particle
+{
+	glm::vec3 Position, Velocity;
+	glm::vec3 Color;
+	float Life;
+
+	Particle()
+		: Position(0.0f), Velocity(0.0f), Color(0.0f), Life(0.0f) {}
+};
+
+GLuint fireTexture;
+
+namespace fire {
+	std::vector<Particle> particles;
+	int lastUsedParticle = 0;
+	int nr_particles = 1500;
+}
+
+void initParticles() {
+	for (unsigned int i = 0; i < fire::nr_particles; ++i)
+		fire::particles.push_back(Particle());
+};
+
+int firstUnusedParticle()
+{
+	for (int i = fire::lastUsedParticle; i < fire::nr_particles; ++i) {
+		if (fire::particles[i].Life <= 0.0f) {
+			fire::lastUsedParticle = i;
+			return i;
+		}
+	}
+	for (unsigned int i = 0; i < fire::lastUsedParticle; ++i) {
+		if (fire::particles[i].Life <= 0.0f) {
+			fire::lastUsedParticle = i;
+			return i;
+		}
+	}
+	fire::lastUsedParticle = 0;
+	return 0;
+}
+
+void respawnParticle(Particle& particle, glm::vec3 offset, glm::vec3 firePos)
+{
+	float randomx = ((rand() % 100) - 50) / 300.0f;
+	float randomy = ((rand() % 100) - 50) / 300.0f;
+	float randomz = ((rand() % 100) - 50) / 300.0f;
+	glm::vec3 Color1 = glm::vec3(0.98f, 0.24f, 0.05f);
+	glm::vec3 Color2 = glm::vec3(0.98f, 0.47f, 0.05f);
+	glm::vec3 Color3 = glm::vec3(1.00f, 0.78f, 0.00f);
+	particle.Position = firePos + glm::vec3(randomx, randomy, randomz);
+	int choice = (rand() % 3) + 1;
+	if (choice == 1)
+		particle.Color = Color1;
+	if (choice == 2)
+		particle.Color = Color2;
+	if (choice == 3)
+		particle.Color = Color3;
+	if (choice < 3)
+		float randomy = ((rand() % 100) - 80) / 300.0f;
+	particle.Life = 1.0f;
+	particle.Velocity = glm::vec3(0.1f);
+}
+
+void particleUpdate(float dt, int newParticles, glm::vec3 offset, glm::vec3 firePos)
+{
+	for (int i = 0; i < newParticles; ++i)
+	{
+		int unusedParticle = firstUnusedParticle();
+		respawnParticle(fire::particles[unusedParticle], offset, firePos);
+	}
+	for (int i = 0; i < fire::nr_particles; ++i)
+	{
+		Particle& p = fire::particles[i];
+		p.Life -= dt;
+		if (p.Life > 0.0f)
+		{
+			p.Position -= p.Velocity * dt;
+		}
+	}
+}
 
 namespace dragon
 {
@@ -755,6 +848,15 @@ void renderScene(GLFWwindow* window)
 	spotlightPos = crossbowPos + 0.2 * crossbowDir;
 	spotlightConeDir = crossbowDir;
 
+	for (glm::vec3 firePos : firePosition) {
+		particleUpdate(deltaTime, 50, glm::vec3(0.3f, 0.3f, 0.3f), firePos);
+	}
+
+	//drawParticles();
+	for (Particle particle : fire::particles) {
+		drawObjectPBR(models::fireContext, glm::translate(particle.Position), particle.Color, 0.0f, 0.0f);
+	}
+
 	///// SCENE DRAWING
 
 	// columns
@@ -887,6 +989,7 @@ void init(GLFWwindow* window)
 	loadModelToContext("./models/dragonTail.obj", models::dragonCone);
 	loadModelToContext("./models/crossbow.obj", models::crossbowContext);
 	loadModelToContext("./models/arrow.obj", models::arrowContext);
+	loadModelToContext("./models/fire.obj", models::fireContext);
 
 	// crossbow textures
 	//crossbowTexture::albedo = Core::LoadTexture("textures/crossbow/albedo.jpg");
@@ -977,6 +1080,7 @@ void init(GLFWwindow* window)
 	else if (dragon::currentPath == 3)
 		dragon::spline.points = dragon::path3;
 	initPath();
+	initParticles();
 }
 
 void shutdown(GLFWwindow* window)

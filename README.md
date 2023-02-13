@@ -46,3 +46,7 @@ Narzędzia
 -----
 - Visual Studio
 - Blender
+
+Fire rendering
+-----
+Fire rendering zostal stworzony przez system generowania particles. Particles są pokolorawane w colory ognia. Mają swój czas życia po którym umierają i tworzą się nowe. Są generowane wokół koordynat pochodni, gdzie musi być ogień. Można w kodzie zobaczyć jak tworzona gęstość, liczba tworzonych particles, a także liczba tworzonych nowych particles, która wpływa na częstotliwość migotania ognia.

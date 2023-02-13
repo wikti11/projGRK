@@ -14,14 +14,17 @@ Wybrane technologie
 - parallel transport frames ( smok )
 - fire rendering ( pochodnie )
 
-Zawartość pokoju
+Modele
 -----
-- drzwi
-- kolumna
-- pochodnie
-- lampy
-- włączniki lamp
-- segmentowany smok lata po całym pokoju
+- drzwi (gotowy model, tekstury z Poly Haven)
+- kolumna (model własny wykonany w Blenderze, tekstury z Poly Haven)
+- pochodnie (gotowy model, przerobiony w Blenderze, tesktury z Poly Haven)
+- lampy (gotowy model i tekstury)
+- włączniki lamp (gotowy model, tekstury z Poly Haven)
+- segmentowany smok lata po całym pokoju (gotowy model i tekstury, przerobiony w Blenderze)
+- pokój (model własny wykonany w Blenderze, tekstury z Poly Haven)
+- kusza (gotowy model, przerobiony w Blenderze, tekstury z Poly Haven)
+- strzała (gotowy model i tekstury)
 
 Interakcje
 -----

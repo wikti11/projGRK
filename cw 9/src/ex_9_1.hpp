@@ -10,7 +10,7 @@
 #include "Render_Utils.h"
 #include "Texture.h"
 #include "Spline.cpp"
-
+#include "SOIL/SOIL.h"
 #include "Box.cpp"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -144,7 +144,8 @@ namespace doorTexture
 
 GLuint depthMapFBO;
 GLuint depthMap;
-
+GLuint cubemapTexture;
+GLuint programSkybox;
 GLuint program;
 GLuint programSun;
 GLuint programTest;
@@ -152,6 +153,8 @@ GLuint programTex;
 GLuint programPBR;
 
 Core::Shader_Loader shaderLoader;
+Core::RenderContext skyboxContext;
+
 
 glm::vec3 sunPos = glm::vec3(-4.740971f, 2.149999f, 0.369280f);
 glm::vec3 sunDir = glm::vec3(-0.93633f, 0.351106, 0.003226f);
@@ -180,6 +183,7 @@ float spotlightPhi = 3.14 / 4;
 
 float lastTime = -1.f;
 float deltaTime = 0.f;
+bool shot = false;
 
 std::vector<glm::vec3> columnPosition = {
 	{0.0f, 0.0f, 0.0f},
@@ -590,6 +594,40 @@ void renderShadowapSun() {
 	glViewport(0, 0, WIDTH, HEIGHT);
 }
 
+void loadCubemap(char* cubemap[])
+{
+	glGenTextures(1, &cubemapTexture);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+
+	int w, h;
+	unsigned char* data;
+	for (unsigned int i = 0; i < 6; i++)
+	{
+		data = SOIL_load_image(cubemap[i], &w, &h, 0, SOIL_LOAD_RGBA);
+		glTexImage2D(
+			GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+			0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data
+		);
+	}
+
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+}
+
+void drawSkybox(glm::mat4 modelMatrix) {
+	glDisable(GL_DEPTH_TEST);
+	glUseProgram(programSkybox);
+	glm::mat4 viewProjectionMatrix = createPerspectiveMatrix() * createCameraMatrix();
+	glm::mat4 transformation = viewProjectionMatrix * modelMatrix;
+	glUniformMatrix4fv(glGetUniformLocation(programSkybox, "transformation"), 1, GL_FALSE, (float*)&transformation);
+	Core::SetActiveTexture(cubemapTexture, "skybox", programSkybox, 0);
+	Core::DrawContext(skyboxContext);
+	glEnable(GL_DEPTH_TEST);
+}
+
 
 // torch consists of 3 main elements so everything is put here to simplify it
 // they don't rotate no matter if i use matrix, glm::rotate or glm::eulerAngle
@@ -611,13 +649,16 @@ void drawTorch(glm::mat4 translationMatrix, float angle)
 void renderScene(GLFWwindow* window)
 {
 	///// SLEEP
-	Sleep(20);
+	//Sleep(20);
+
+
 
 	glClearColor(0.4f, 0.4f, 0.8f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	float time = glfwGetTime();
 	updateDeltaTime(time);
 	renderShadowapSun();
+	drawSkybox(glm::translate(cameraPos));
 
 	glUseProgram(programSun);
 	glm::mat4 viewProjectionMatrix = createPerspectiveMatrix() * createCameraMatrix();
@@ -847,13 +888,21 @@ void renderScene(GLFWwindow* window)
 	// update
 	spotlightPos = crossbowPos + 0.2 * crossbowDir;
 	spotlightConeDir = crossbowDir;
-
-	for (glm::vec3 firePos : firePosition) {
-		particleUpdate(deltaTime, 50, glm::vec3(0.3f, 0.3f, 0.3f), firePos);
+	for (int i = 0; i < torchPosition.size(); i++)
+	{
+		if (torchExisting[i])
+		{
+			particleUpdate(deltaTime, 50, glm::vec3(0.3f, 0.3f, 0.3f), firePosition[i]);
+		}
 	}
+	//for (glm::vec3 firePos : firePosition) {
+	//	particleUpdate(deltaTime, 50, glm::vec3(0.3f, 0.3f, 0.3f), firePos);
+	//}
+
 
 	//drawParticles();
 	for (Particle particle : fire::particles) {
+
 		drawObjectPBR(models::fireContext, glm::translate(particle.Position), particle.Color, 0.0f, 0.0f);
 	}
 
@@ -967,6 +1016,12 @@ void init(GLFWwindow* window)
 {
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	glEnable(GL_DEPTH_TEST);
+
+	//skybox
+	programSkybox = shaderLoader.CreateProgram("shaders/shader_skybox.vert", "shaders/shader_skybox.frag");
+	loadModelToContext("./models/cube.obj", skyboxContext);
+	char* cubemap[] = { "textures/skybox/posx.jpg", "textures/skybox/negx.jpg", "textures/skybox/posy.jpg", "textures/skybox/negy.jpg", "textures/skybox/posz.jpg", "textures/skybox/negz.jpg" };
+	loadCubemap(cubemap);
 
 	// shaders
 	program = shaderLoader.CreateProgram("shaders/shader_9_1.vert", "shaders/shader_9_1.frag");
@@ -1173,15 +1228,21 @@ void processInput(GLFWwindow* window)
 
 	///// ARROW
 
-	if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 	{
 		//if (!arrow::hasBeenShot)
+		if(!shot)
 		{
 			arrow::hasBeenShot = true;
 			arrow::time = 0.0f;
 			arrow::position = crossbowPos;
 			arrow::direction = crossbowDir;
+			shot = true;
 		}
+	}
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE)
+	{
+		shot = false;
 	}
 
 	// PATH EDITING
